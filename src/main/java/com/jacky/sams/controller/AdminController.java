@@ -1,23 +1,23 @@
 package com.jacky.sams.controller;
 
-import com.jacky.sams.dao.AdminRepository;
-import com.jacky.sams.entity.Admin;
+import com.jacky.sams.dao.SysUserRepository;
+import com.jacky.sams.entity.SysUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 @RequestMapping(value = "/admin")
 public class AdminController {
 
     @Autowired
-    AdminRepository adminRepository;
+    SysUserRepository sysUserRepository;
 
-    @RequestMapping(value = "/save")
-    public void addAdmin(){
-        Admin admin=new Admin();
-        admin.setUsername("admin");
-        admin.setPassword("123456");
-        adminRepository.save(admin);
+    @RequestMapping(value = "/get")
+    @ResponseBody
+    public SysUser get(){
+        SysUser user=sysUserRepository.findByUsername("admin");
+        return user;
     }
 }

@@ -1,0 +1,104 @@
+body{
+    display: block;
+    margin: 0;
+}
+
+.admin-header {
+    font-size: 1.4rem;
+    margin-bottom: 0;
+    width: 100%;
+    background-color: #fff;
+}
+
+.am-topbar {
+    position: relative;
+    min-height: 50px;
+    border-width: 0 0 1px;
+    border-style: solid;
+    border-color: #ddd;
+    color: #666;
+}
+
+.am-topbar-brand {
+    padding: 0 30px;
+    float: left;
+    font-size: 1.3rem;
+    height: 50px;
+    line-height: 50px;
+}
+
+.am-topbar-collapse.am-collapse {
+    display: inline;
+    height: auto!important;
+    padding: 0;
+    overflow: visible!important;
+}
+
+.am-topbar-collapse {
+    margin-top: 0;
+    padding: 0;
+    width: auto;
+    clear: none;
+}
+
+.am-topbar-collapse {
+    width: 100%;
+    overflow-x: visible;
+    padding: 10px;
+    clear: both;
+    -webkit-overflow-scrolling: touch;
+}
+
+ul{
+    margin: 0;
+    line-height: 50px;
+}
+
+.admin-header-list {
+    float: right;
+}
+
+.am-nav {
+    margin-bottom: 0;
+    padding: 0 50px;
+    list-style: none;
+}
+
+.am-nav-pills>li+li {
+    margin-left: 5px;
+    margin-top: 0;
+}
+
+.am-nav>li {
+    position: relative;
+    display: block;
+}
+
+.am-topbar-nav>li>a {
+    position: relative;
+    line-height: 50px;
+    padding: 0 10px;
+}
+
+.am-nav>li>a {
+    position: relative;
+    display: block;
+    border-radius: 0;
+}
+
+.kuanjie a {
+    float: left;
+    margin-left: 10px;
+}
+
+.am-topbar a {
+    color: #666;
+    font-size: 1.3rem;
+}
+
+a {
+    color: #0e90d2;
+    text-decoration: none;
+    background-color: transparent;
+    cursor: pointer;
+}
