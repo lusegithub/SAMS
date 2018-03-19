@@ -24,10 +24,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
-                .antMatchers(new String[]{"/webjars/**","/static/**","/**/favicon.ico"}).permitAll()
-//                .anyRequest().authenticated()
+        http.csrf().disable()
+                .authorizeRequests()
+                .antMatchers(new String[]{"/bootstrap-table/**","/webjars/**","/static/**","/**/favicon.ico"}).permitAll()
+                .anyRequest().authenticated()
                 .and().formLogin().loginPage("/login").successForwardUrl("/dispatch").permitAll()
+                .and().rememberMe().tokenValiditySeconds(12009600).key("mykey")
                 .and().logout().permitAll();
     }
 }
