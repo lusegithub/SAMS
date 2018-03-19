@@ -4,6 +4,8 @@ import com.jacky.sams.dao.AssociationDetailRepository;
 import com.jacky.sams.entity.AssociationDetail;
 import com.jacky.sams.entity.SysUser;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,6 +28,17 @@ public class AssociationService {
 //        }
         associationDetailRepository.save(detail);
         detail.getId();
+    }
+
+    public Page<AssociationDetail> findAllByPage(int pageIndex,int pageSize){
+        return associationDetailRepository.findAll(new PageRequest(pageIndex-1,pageSize));
+    }
+
+    public void deleteById(String ids){
+        String[] id=ids.split(",");
+        for (String anId : id) {
+            associationDetailRepository.deleteById(anId);
+        }
     }
 
 }

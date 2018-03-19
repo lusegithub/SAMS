@@ -33,4 +33,9 @@ public class HomeController {
         }
         return "redirect:/login?logout";
     }
+
+    @RequestMapping(value="/header", method = RequestMethod.POST)
+    public String header(HttpServletRequest request, HttpServletResponse response) {
+        return "/common/header";
+    }
 }
