@@ -3,6 +3,7 @@ package com.jacky.sams.service;
 import com.jacky.sams.dao.AssociationDetailRepository;
 import com.jacky.sams.entity.AssociationDetail;
 import com.jacky.sams.entity.SysUser;
+import org.omg.Messaging.SYNC_WITH_TRANSPORT;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -39,6 +40,14 @@ public class AssociationService {
         for (String anId : id) {
             associationDetailRepository.deleteById(anId);
         }
+    }
+
+    public List<AssociationDetail> getAssociation(){
+        return associationDetailRepository.findAll();
+    }
+
+    public AssociationDetail getAssociation(String id){
+        return associationDetailRepository.findById(id).orElse(null);
     }
 
 }

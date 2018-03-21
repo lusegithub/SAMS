@@ -20,8 +20,13 @@ public class SysUser implements UserDetails {
     private String username;
     private String password;
 
-    @ManyToMany(cascade = {CascadeType.REFRESH},fetch = FetchType.EAGER)
-    private List<SysRole> roles;
+    @OneToOne(cascade = {CascadeType.REFRESH},fetch = FetchType.EAGER)
+    @JoinColumn(name = "rid")
+    private SysRole role;
+
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH},fetch = FetchType.EAGER)
+    @JoinColumn(name = "aid")
+    private AssociationDetail associationDetail;
 
     public String getId() {
         return id;
@@ -39,21 +44,27 @@ public class SysUser implements UserDetails {
         this.password = password;
     }
 
-    public List<SysRole> getRoles() {
-        return roles;
+    public SysRole getRole() {
+        return role;
     }
 
-    public void setRoles(List<SysRole> roles) {
-        this.roles = roles;
+    public void setRole(SysRole role) {
+        this.role = role;
+    }
+
+    public AssociationDetail getAssociationDetail() {
+        return associationDetail;
+    }
+
+    public void setAssociationDetail(AssociationDetail associationDetail) {
+        this.associationDetail = associationDetail;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> auths = new ArrayList<>();
-        List<SysRole> roles = this.getRoles();
-        for (SysRole role : roles) {
-            auths.add(new SimpleGrantedAuthority(role.getName()));
-        }
+        SysRole role = this.getRole();
+        auths.add(new SimpleGrantedAuthority(role.getName()));
         return auths;
     }
 

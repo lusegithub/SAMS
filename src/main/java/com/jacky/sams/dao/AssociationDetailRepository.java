@@ -5,5 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface AssociationDetailRepository extends JpaRepository<AssociationDetail, String> {
 
-    AssociationDetail findByUsers_Id(String userId);
+
 }

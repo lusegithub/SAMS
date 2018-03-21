@@ -9,6 +9,7 @@
     <script src="/webjars/bootstrap/3.3.5/js/bootstrap.min.js"></script>
     <script src="/static/js/common/bootstrap-table.min.js"></script>
     <script src="/static/js/common/bootstrap-table-zh-CN.min.js"></script>
+    <script src="/static/js/common/jQuery.Form.js"></script>
     <script src="/static/js/common/header.js"></script>
 </head>
 <body>
@@ -41,14 +42,85 @@
         <button id="btn_delete" type="button" class="btn btn-default" onclick="deleteManager()">
             <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>删除
         </button>
-        <button id="btn_add" type="button" class="btn btn-default" onclick="add()">
+        <button id="btn_add" type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal">
             <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增
         </button>
+    </div>
+
+    <!-- 模态框（Modal） -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="myModalLabel">添加社团管理员</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="myAdd" class="form-group" method="post" th:action="@{/admin/asso_manage/add}">
+                        <div class="form-group">
+                            <label for="">账号</label>
+                            <input name="username" class="form-control" type="text" placeholder="">
+                        </div>
+                        <div class="form-group">
+                            <label for="">密码</label>
+                            <input name="password" class="form-control" type="password" placeholder="至少6位字母或数字">
+                        </div>
+                        <div class="form-group">
+                            <label for="">选择社团</label>
+                            <select class="form-control" name="asso_id">
+                                <option th:each="list:${assos}" th:value="${list.id}" th:text="${list.name}"></option>
+                            </select>
+                        </div>
+                        <div class="text-right">
+                            <button id="save" class="btn btn-primary" type="submit">提交</button>
+                            <button class="btn btn-danger" data-dismiss="modal">取消</button>
+                        </div>
+                    </form>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal -->
     </div>
 </div>
 </body>
 </html>
 <script>
+
+    $(document).ready(function() {
+        $('#myAdd').submit(function() {
+            var options = {
+                success:  showResponse
+            };
+            $(this).ajaxSubmit(options);
+            return false;
+            //非常重要，如果是false，则表明是不跳转
+            //在本页上处理，也就是ajax，如果是非false，则传统的form跳转。
+        });
+    });
+
+    function showResponse() {
+        window.location.href="/admin/asso_manage/list"
+    }
+
+    $('#myModal').on('show.bs.modal', centerModals);
+    //禁用空白处点击关闭
+    //    $('#myModal').modal({
+    //        backdrop: 'static',
+    //        keyboard: false,//禁止键盘
+    //        show:false
+    //    });
+    //页面大小变化是仍然保证模态框水平垂直居中
+    $(window).on('resize', centerModals);
+
+    function centerModals() {
+        $('#myModal').each(function(i) {
+            var $clone = $(this).clone().css('display','block').appendTo('body');
+            var top = Math.round(($clone.height() - $clone.find('.modal-content').height()) / 2);
+            top = top > 0 ? top : 0;
+            $clone.remove();
+            $(this).find('.modal-content').css("margin-top", top);
+        });
+    };
+
     //根据窗口调整表格高度
     $(window).resize(function() {
         $('#mytab').bootstrapTable('resetView', {
@@ -92,11 +164,17 @@
             title:'ID',
             field:'id',
             visible:false
-        },
+        },{
+                title:'账号',
+                field:'username'
+            },
         {
             title:'所属社团',
-            field:'name',
-            sortable:true
+            field:'associationDetail',
+            sortable:true,
+            formatter:function(value,row,index){
+                return value.name;
+            }
         }
     ],
         locale:'zh-CN',//中文支持,
@@ -163,9 +241,5 @@
                 alert("删除失败")
             }
         })
-    }
-
-    function add() {
-        window.location.href="/admin/asso_manage/addAdmin"
     }
 </script>

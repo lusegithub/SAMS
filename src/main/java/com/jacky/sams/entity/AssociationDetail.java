@@ -4,6 +4,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 public class AssociationDetail{
@@ -14,9 +15,6 @@ public class AssociationDetail{
     private String id;
 
     private String name;
-
-    @OneToMany(cascade = {CascadeType.REFRESH},fetch = FetchType.EAGER)
-    private List<SysUser> users;
 
     public String getId() {
         return id;
@@ -32,13 +30,5 @@ public class AssociationDetail{
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public List<SysUser> getUsers() {
-        return users;
-    }
-
-    public void setUsers(List<SysUser> users) {
-        this.users = users;
     }
 }
