@@ -52,9 +52,12 @@ public class AdminController {
 
     @PostMapping("/asso_manage/listData")
     @ResponseBody
-    public HashMap<String, Object> listData(int pageIndex,int pageSize){
+    public HashMap<String, Object> listData(String asso_id,String username,int pageIndex,int pageSize){
         HashMap<String ,Object> hashMap=new HashMap<>();
-        Page<SysUser> detailPage=userService.findAllAssoManagerByPage(pageIndex,pageSize);
+        HashMap<String ,Object> paramMap=new HashMap<>();
+        paramMap.put("username",username);
+        paramMap.put("asso_id",asso_id);
+        Page<SysUser> detailPage=userService.findAllAssoManagerByPage(paramMap,pageIndex,pageSize);
         hashMap.put("data",detailPage.getContent());
         hashMap.put("total",detailPage.getTotalElements());
         return hashMap;

@@ -21,13 +21,16 @@
             查询条件
         </div>
         <div class="panel-body form-group" style="margin-bottom:0px;">
-            <label class="col-sm-1 control-label" style="text-align: right; margin-top:5px">姓名：</label>
+            <label class="col-sm-1 control-label" style="text-align: right; margin-top:5px">账号：</label>
             <div class="col-sm-2">
-                <input type="text" class="form-control" name="Name" id="search_name"/>
+                <input type="text" class="form-control" name="Name" id="search_username"/>
             </div>
-            <label class="col-sm-1 control-label" style="text-align: right; margin-top:5px">手机号：</label>
+            <label class="col-sm-1 control-label" style="text-align: right; margin-top:5px">社团：</label>
             <div class="col-sm-2">
-                <input type="text" class="form-control" name="Name" id="search_tel"/>
+                <select id="search_asso" class="form-control" name="asso_id">
+                    <option value="">选择社团</option>
+                    <option th:each="list:${assos}" th:value="${list.id}" th:text="${list.name}"></option>
+                </select>
             </div>
             <div class="col-sm-1 col-sm-offset-4">
                 <button class="btn btn-primary" id="search_btn">查询</button>
@@ -196,18 +199,19 @@
 
     //请求服务数据时所传参数
     function queryParams(params){
+        var asso_id=$("#search_asso").find("option:selected").val();
         return{
             //每页多少条数据
             pageSize: params.limit,
             //请求第几页
             pageIndex: params.pageNumber,
-            name: $('#search_name').val(),
-            tel: $('#search_tel').val()
+            username: $('#search_username').val(),
+            asso_id: asso_id
         }
     }
     //查询按钮事件
     $('#search_btn').click(function(){
-        $('#mytab').bootstrapTable('refreshOptions', {url: '../index.php/admin/index/userManagement',pageNumber:1,pageSize:10});
+        $('#mytab').bootstrapTable('refreshOptions', {url: '/admin/asso_manage/listData',pageNumber:1,pageSize:10});
     });
     //tableHeight函数
     function tableHeight(){
