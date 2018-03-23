@@ -14,7 +14,26 @@ public class AssociationDetail{
     @GenericGenerator(name = "system-uuid", strategy = "uuid")
     private String id;
 
+    //社团全称
     private String name;
+
+    //社团logo
+    private String logo;
+
+    //社团类别
+    private String category;
+
+    //社团宗旨
+    private String purpose;
+
+    //主要活动
+    private String activity;
+
+    //会员福利
+    private String welfare;
+
+    //是否通过审核 0表示审核不通过，1表示审核通过，2表示待审核
+    private Integer pass;
 
     public String getId() {
         return id;
@@ -30,5 +49,53 @@ public class AssociationDetail{
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getLogo() {
+        return logo;
+    }
+
+    public void setLogo(String logo) {
+        this.logo = logo;
+    }
+
+    public String getPurpose() {
+        return purpose;
+    }
+
+    public void setPurpose(String purpose) {
+        this.purpose = purpose;
+    }
+
+    public String getActivity() {
+        return activity;
+    }
+
+    public void setActivity(String activity) {
+        this.activity = activity;
+    }
+
+    public String getWelfare() {
+        return welfare;
+    }
+
+    public void setWelfare(String welfare) {
+        this.welfare = welfare;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public Integer getPass() {
+        return pass;
+    }
+
+    public void setPass(Integer pass) {
+        this.pass = pass;
     }
 }

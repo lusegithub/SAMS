@@ -1,28 +1,34 @@
 package com.jacky.sams.controller;
 
-import com.jacky.sams.dao.AssociationDetailRepository;
-import com.jacky.sams.dao.SysRoleRepository;
 import com.jacky.sams.entity.AssociationDetail;
+import com.jacky.sams.entity.Result;
 import com.jacky.sams.entity.SysRole;
 import com.jacky.sams.entity.SysUser;
 import com.jacky.sams.service.AssociationService;
 import com.jacky.sams.service.SysRoleService;
 import com.jacky.sams.service.SysUserService;
+import com.jacky.sams.util.ImageUtil;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 
 @Controller
 @RequestMapping(value = "/admin")
 public class AdminController {
+
+    /**
+     * 在配置文件中配置的文件保存路径
+     */
+    @Value("${img.location}")
+    private String location;
 
     @Resource
     private SysRoleService roleService;
@@ -36,11 +42,6 @@ public class AdminController {
     @RequestMapping(value = "/index")
     public String index(){
         return "admin/index";
-    }
-
-    @RequestMapping("/asso_manage/addAdmin")
-    public String addAssoAdmin(){
-        return "/admin/associator/add";
     }
 
     @RequestMapping("/asso_manage/list")
@@ -69,17 +70,6 @@ public class AdminController {
         userService.deleteById(ids);
     }
 
-    @GetMapping("/asso_manage/get")
-    @ResponseBody
-    public SysUser get(){
-//        SysUser user=new SysUser();
-//        user.setUsername("test");
-//        Page<AssociationDetail> detail=associationService.findAllByPage(1,10);
-//        user.setAssociationDetail(detail.getContent().get(0));
-//        userService.addUser(user);
-        return userService.getUser();
-    }
-
     @PostMapping("/asso_manage/add")
     @ResponseBody
     public void add(SysUser sysUser,String asso_id){
@@ -88,5 +78,64 @@ public class AdminController {
         AssociationDetail detail=associationService.getAssociation(asso_id);
         sysUser.setAssociationDetail(detail);
         userService.addUser(sysUser);
+    }
+
+    @RequestMapping("/association/listPage")
+    public String getAssociationPage(Model model){
+        return "/admin/association/list";
+    }
+
+    @PostMapping("/association/list")
+    @ResponseBody
+    public HashMap<String, Object> getAssociations(Integer pass,String name,String category,int pageIndex,int pageSize){
+        HashMap<String ,Object> hashMap=new HashMap<>();
+        HashMap<String ,Object> paramMap=new HashMap<>();
+        paramMap.put("category",category);
+        paramMap.put("name",name);
+        paramMap.put("pass",pass);
+        Page<AssociationDetail> detailPage=associationService.findAllAssociationByPage(paramMap,pageIndex,pageSize);
+        hashMap.put("data",detailPage.getContent());
+        hashMap.put("total",detailPage.getTotalElements());
+        return hashMap;
+    }
+
+    @PostMapping("/association/delete")
+    @ResponseBody
+    public void deleteAssociation(String ids){
+        associationService.deleteById(ids);
+    }
+
+    @PostMapping("/association/add")
+    @ResponseBody
+    public Result addAssociation(AssociationDetail detail, @RequestParam("logoPic") MultipartFile multipartFile) {
+        Result result=new Result();
+        result.setResultCode(0);
+        if (!multipartFile.isEmpty()) {
+            if (!multipartFile.getContentType().contains("image")){
+                result.setResultInfo("只能上传图片");
+                return result;
+            }
+            String file_name;
+            try {
+                file_name = ImageUtil.saveImg(multipartFile, location);
+            } catch (IOException e) {
+                result.setResultInfo("图片上传失败");
+                return result;
+            }
+            detail.setLogo(file_name);
+        }
+        detail.setPass(2);
+        associationService.addAssociation(detail);
+        result.setResultCode(1);
+        result.setResultInfo("添加成功");
+        return result;
+    }
+
+    @GetMapping("/association/get/{id}")
+    public String getAssociation(Model model,@PathVariable("id") String id){
+        AssociationDetail detail=associationService.getAssociation(id);
+        detail.setLogo("/static/image/associationlogo/"+detail.getLogo());
+        model.addAttribute("detail",detail);
+        return "/admin/association/detail";
     }
 }

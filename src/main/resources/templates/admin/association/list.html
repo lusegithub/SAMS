@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>学生社团管理系统</title>
+    <link rel="stylesheet" href="/webjars/bootstrap/3.3.5/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="/static/css/common/bootstrap-table.min.css"/>
+    <script src="/webjars/jquery/3.1.1/jquery.min.js"></script>
+    <script src="/webjars/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script src="/static/js/common/bootstrap-table.min.js"></script>
+    <script src="/static/js/common/bootstrap-table-zh-CN.min.js"></script>
+    <script src="/static/js/common/jQuery.Form.js"></script>
+    <script src="/static/js/common/header.js"></script>
+</head>
+<body>
+<div id="header"></div>
+
+<div class="container">
+    <div class="panel panel-default">
+        <div class="panel-heading">查询条件</div>
+        <div class="panel-body form-group" style="margin-bottom:0px;">
+            <label class="col-sm-1 control-label" style="text-align: right; margin-top:5px">名称：</label>
+            <div class="col-sm-2">
+                <input type="text" class="form-control" name="Name" id="search_name"/>
+            </div>
+            <label class="col-sm-1 control-label" style="text-align: right; margin-top:5px">社团：</label>
+            <div class="col-sm-2">
+                <select id="search_category" class="form-control" name="category">
+                    <option value="">选择类别</option>
+                    <option value="人文学术">人文学术</option>
+                    <option value="文娱体育">文娱体育</option>
+                    <option value="社会服务">社会服务</option>
+                </select>
+            </div>
+            <label class="col-sm-1 control-label" style="text-align: right; margin-top:5px">状态：</label>
+            <div class="col-sm-2">
+                <select id="search_pass" class="form-control" name="pass">
+                    <option value="">选择状态</option>
+                    <option value="2">待审核</option>
+                    <option value="1">已通过</option>
+                    <option value="0">未通过</option>
+                </select>
+            </div>
+            <div class="col-sm-1 control-label">
+                <button class="btn btn-primary" id="search_btn">查询</button>
+            </div>
+        </div>
+    </div>
+    <table id="mytab" class="table table-hover"></table>
+    <div id="toolbar" class="btn-group pull-right" style="margin-right: 20px;">
+        <button id="btn_edit" type="button" class="btn btn-default" style="display:none;border-radius: 0">
+            <span class="glyphicon glyphicon-pencil" aria-hidden="true" ></span>修改
+        </button>
+        <button id="btn_retrieve" type="button" class="btn btn-default" onclick="goDetail()">
+            <span class="glyphicon glyphicon-check" aria-hidden="true"></span>查看
+        </button>
+        <button id="btn_delete" type="button" class="btn btn-default" onclick="deleteAssociation()">
+            <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>删除
+        </button>
+        <button id="btn_add" type="button" class="btn btn-default" onclick="add()">
+            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增
+        </button>
+    </div>
+
+    <!-- 模态框（Modal） -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="myModalLabel">添加社团管理员</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="myAdd" class="form-group" method="post" th:action="@{/admin/asso_manage/add}">
+                        <div class="form-group">
+                            <label for="">账号</label>
+                            <input name="username" class="form-control" type="text" placeholder="">
+                        </div>
+                        <div class="form-group">
+                            <label for="">密码</label>
+                            <input name="password" class="form-control" type="password" placeholder="至少6位字母或数字">
+                        </div>
+                        <div class="form-group">
+                            <label for="">选择社团</label>
+                            <select class="form-control" name="asso_id">
+                                <option th:each="list:${assos}" th:value="${list.id}" th:text="${list.name}"></option>
+                            </select>
+                        </div>
+                        <div class="text-right">
+                            <button id="save" class="btn btn-primary" type="submit">提交</button>
+                            <button class="btn btn-danger" data-dismiss="modal">取消</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 模态框（Modal） -->
+
+</div>
+</body>
+</html>
+<script>
+
+    $(document).ready(function() {
+        $('#myAdd').submit(function() {
+            var options = {
+                success:  showResponse
+            };
+            $(this).ajaxSubmit(options);
+            return false;
+            //非常重要，如果是false，则表明是不跳转
+            //在本页上处理，也就是ajax，如果是非false，则传统的form跳转。
+        });
+    });
+
+    function showResponse() {
+        window.location.href="/admin/asso_manage/list"
+    }
+
+    $('#myModal').on('show.bs.modal', centerModals);
+    //禁用空白处点击关闭
+    //    $('#myModal').modal({
+    //        backdrop: 'static',
+    //        keyboard: false,//禁止键盘
+    //        show:false
+    //    });
+    //页面大小变化是仍然保证模态框水平垂直居中
+    $(window).on('resize', centerModals);
+
+    function centerModals() {
+        $('#myModal').each(function(i) {
+            var $clone = $(this).clone().css('display','block').appendTo('body');
+            var top = Math.round(($clone.height() - $clone.find('.modal-content').height()) / 2);
+            top = top > 0 ? top : 0;
+            $clone.remove();
+            $(this).find('.modal-content').css("margin-top", top);
+        });
+    }
+
+    //根据窗口调整表格高度
+    $(window).resize(function() {
+        $('#mytab').bootstrapTable('resetView', {
+            height: tableHeight()
+        })
+    });
+    //生成数据
+    $('#mytab').bootstrapTable({
+        method: 'post',
+        contentType: "application/x-www-form-urlencoded",//必须要有！！！！
+        url:"/admin/association/list",//要请求数据的文件路径
+        height:tableHeight(),//高度调整
+        striped: true, //是否显示行间隔色
+        dataField: "data",//bootstrap table 可以前端分页也可以后端分页，这里
+        //我们使用的是后端分页，后端分页时需返回含有total：总记录数,这个键值好像是固定的
+        //rows： 记录集合 键值可以修改  dataField 自己定义成自己想要的就好
+        pageNumber: 1, //初始化加载第一页，默认第一页
+        pagination:true,//是否分页
+        queryParamsType:'limit',//查询参数组织方式
+        queryParams:queryParams,//请求服务器时所传的参数
+        sidePagination:'server',//指定服务器端分页
+        pageSize:10,//单页记录数
+        pageList:[5,10,20,30],//分页步进值
+        showRefresh:true,//刷新按钮
+        showColumns:false,
+        clickToSelect: true,//是否启用点击选中行
+        toolbarAlign:'right',//工具栏对齐方式
+        buttonsAlign:'right',//按钮对齐方式
+        toolbar:'#toolbar',//指定工作栏
+        columns:[
+            {
+                title:'全选',
+                field:'select',
+                //复选框
+                checkbox:true,
+                width:25,
+                align:'center',
+                valign:'middle'
+            },
+            {
+                title:'ID',
+                field:'id',
+                visible:false
+            },{
+                title:'社团全称',
+                field:'name'
+            },
+            {
+                title:'类别',
+                field:'category'
+            },{
+                title:'宗旨',
+                field:'purpose'
+            },{
+                title:'状态',
+                field:'pass',
+                formatter:function(value,row,index){
+                    if(value==0){
+                        return '<i class="fa fa-lock" style="color:red">未通过</i>'
+                    }else if(value==1){
+                        return '<i class="fa fa-unlock" style="color:green">已通过</i>'
+                    }else{
+                        return '<i class="fa fa-unlock" style="color:gray">待审核</i>'
+                    }
+                }
+            }
+        ],
+        locale:'zh-CN',//中文支持,
+        responseHandler:function(res){
+            //在ajax获取到数据，渲染表格之前，修改数据源
+            return res;
+        }
+    });
+
+    //请求服务数据时所传参数
+    function queryParams(params){
+        var category=$("#search_category").find("option:selected").val();
+        var pass = $("#search_pass").find("option:selected").val();
+        return{
+            //每页多少条数据
+            pageSize: params.limit,
+            //请求第几页
+            pageIndex: params.pageNumber,
+            name: $('#search_name').val(),
+            category: category,
+            pass: pass
+        }
+    }
+    //查询按钮事件
+    $('#search_btn').click(function(){
+        $('#mytab').bootstrapTable('refreshOptions', {url: '/admin/association/list',pageNumber:1,pageSize:10});
+    });
+    //tableHeight函数
+    function tableHeight(){
+        //可以根据自己页面情况进行调整
+        return $(window).height() -280;
+    }
+
+    function deleteAssociation() {
+        //获取所有被选中的记录
+        var rows = $("#mytab").bootstrapTable('getSelections');
+        if (rows.length=== 0) {
+            alert("请先选择要删除的记录!");
+            return;
+        }
+        var ids = '';
+        for (var i = 0; i < rows.length; i++) {
+            ids += rows[i]['id'] + ",";
+        }
+        ids = ids.substring(0, ids.length - 1);
+        $.ajax({
+            url: "/admin/association/delete",
+            type: "post",
+            data: {
+                ids: ids
+            },
+            success: function () {
+                alert("删除成功");
+                $('#mytab').bootstrapTable('refresh', {url: '/admin/association/list',pageNumber:1,pageSize:10})
+            },
+            error: function () {
+                alert("删除失败")
+            }
+        })
+    }
+
+    function add() {
+        window.location.href="/admin/association/addpage"
+    }
+    
+    function goDetail() {
+        var rows = $("#mytab").bootstrapTable('getSelections');
+        if (rows.length=== 0) {
+            alert("请先选择要查看的记录!");
+            return;
+        }
+        if (rows.length>1) {
+            alert("只能选择一条记录查看");
+            return;
+        }
+        var ids = '';
+        for (var i = 0; i < rows.length; i++) {
+            ids += rows[i]['id'] + ",";
+        }
+        ids = ids.substring(0, ids.length - 1);
+        window.location.href="/admin/association/get/"+ids;
+    }
+</script>
