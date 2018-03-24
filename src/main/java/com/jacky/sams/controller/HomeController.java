@@ -38,4 +38,9 @@ public class HomeController {
     public String header(HttpServletRequest request, HttpServletResponse response) {
         return "/common/header";
     }
+
+    @RequestMapping(value="/association/header", method = RequestMethod.POST)
+    public String associationHeader(HttpServletRequest request, HttpServletResponse response) {
+        return "/association/common/header";
+    }
 }

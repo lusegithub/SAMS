@@ -11,4 +11,9 @@ public class AssociationController {
     public String index(){
         return "association/index";
     }
+
+    @RequestMapping(value = "/detail")
+    public String detail(){
+        return "association/personal/detail";
+    }
 }

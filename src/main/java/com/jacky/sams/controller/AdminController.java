@@ -1,9 +1,6 @@
 package com.jacky.sams.controller;
 
-import com.jacky.sams.entity.AssociationDetail;
-import com.jacky.sams.entity.Result;
-import com.jacky.sams.entity.SysRole;
-import com.jacky.sams.entity.SysUser;
+import com.jacky.sams.entity.*;
 import com.jacky.sams.service.AssociationService;
 import com.jacky.sams.service.SysRoleService;
 import com.jacky.sams.service.SysUserService;
@@ -107,10 +104,10 @@ public class AdminController {
 
     @PostMapping("/association/add")
     @ResponseBody
-    public Result addAssociation(AssociationDetail detail, @RequestParam("logoPic") MultipartFile multipartFile) {
+    public Result addAssociation(AssociationDetail associationDetail, @RequestParam(value = "logoPic", required = false) MultipartFile multipartFile) {
         Result result=new Result();
         result.setResultCode(0);
-        if (!multipartFile.isEmpty()) {
+        if (multipartFile!=null && !multipartFile.isEmpty()) {
             if (!multipartFile.getContentType().contains("image")){
                 result.setResultInfo("只能上传图片");
                 return result;
@@ -122,10 +119,10 @@ public class AdminController {
                 result.setResultInfo("图片上传失败");
                 return result;
             }
-            detail.setLogo(file_name);
+            associationDetail.setLogo(file_name);
         }
-        detail.setPass(2);
-        associationService.addAssociation(detail);
+        associationDetail.setPass(2);
+        associationService.addAssociation(associationDetail);
         result.setResultCode(1);
         result.setResultInfo("添加成功");
         return result;
@@ -137,5 +134,11 @@ public class AdminController {
         detail.setLogo("/static/image/associationlogo/"+detail.getLogo());
         model.addAttribute("detail",detail);
         return "/admin/association/detail";
+    }
+
+    @PostMapping("/association/pass")
+    @ResponseBody
+    public void pass(String id,Integer passCode){
+        associationService.pass(id,passCode);
     }
 }

@@ -35,6 +35,10 @@ public class AssociationDetail{
     //是否通过审核 0表示审核不通过，1表示审核通过，2表示待审核
     private Integer pass;
 
+    @OneToMany(cascade = {CascadeType.ALL},fetch = FetchType.LAZY)
+    @JoinColumn(name="association_id")
+    private List<Member> member;
+
     public String getId() {
         return id;
     }
@@ -97,5 +101,13 @@ public class AssociationDetail{
 
     public void setPass(Integer pass) {
         this.pass = pass;
+    }
+
+    public List<Member> getMember() {
+        return member;
+    }
+
+    public void setMember(List<Member> member) {
+        this.member = member;
     }
 }

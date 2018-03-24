@@ -8,9 +8,13 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
+
 public interface SysUserRepository extends JpaRepository<SysUser, String>,JpaSpecificationExecutor<SysUser> {
     SysUser findByUsername(String username);
 
     @Query(value = "select u from SysUser u where u.role.id='3' and u.username=:username")
     Page<SysUser> findAllAssoManagerByPage(@Param("username") String username, Pageable pageable);
+
+    List<SysUser> findAllByAssociationDetail_Id(String asso_id);
 }
