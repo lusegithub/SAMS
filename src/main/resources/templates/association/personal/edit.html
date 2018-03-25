@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>学生社团管理系统</title>
+    <link rel="stylesheet" href="/webjars/bootstrap/3.3.5/css/bootstrap.min.css"/>
+    <script src="/webjars/jquery/3.1.1/jquery.min.js"></script>
+    <script src="/static/js/association/header.js"></script>
+    <script src="/webjars/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script src="/static/js/common/jQuery.Form.js"></script>
+    <style>
+        img{width:200px;height:200px;overflow:hidden;}
+    </style>
+</head>
+<body>
+<div id="header"></div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-xs-12 col-md-offset-2">
+            <form id="myAdd" class="form-horizontal" role="form" style="width: auto" enctype="multipart/form-data" th:action="@{/association/detail/edit}" th:method="post">
+                <fieldset>
+                    <legend>社团信息</legend>
+                </fieldset>
+                <input type="hidden" name="id" id="id" th:value="${detail.id}">
+                <input type="hidden" name="pass" th:value="${detail.pass}">
+                <input type="hidden" name="logo" th:value="${detail.logo}">
+                <input type="hidden" name="category" th:value="${detail.category}">
+                <div class="form-group">
+                    <label for="name" class="col-sm-2 control-label">社团全称：</label>
+                    <div class="col-sm-4">
+                        <input th:value="${detail.name}" type="text" class="form-control" id="name" name="name" readonly>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="logo" class="col-sm-2 control-label">logo：</label>
+                    <div class="col-sm-4">
+                        <input type="file" name="logoPic" id="logo">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="category" class="col-sm-2 control-label">类别：</label>
+                    <div class="col-sm-4" id="category">
+                        <label class="control-label" th:if="${detail.category == '人文学术'}">人文学术</label>
+                        <label class="control-label" th:if="${detail.category == '文娱体育'}">文娱体育</label>
+                        <label class="control-label" th:if="${detail.category == '社会服务'}">社会服务</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="purpose" class="col-sm-2 control-label">社团宗旨：</label>
+                    <textarea th:text="${detail.purpose}" name="purpose" id="purpose" class="col-lg-3 input-sm" rows="3" style="margin-left: 15px"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="activity" class="col-sm-2 control-label">主要活动：</label>
+                    <textarea th:text="${detail.activity}" name="activity" id="activity" class="col-lg-3 input-sm" rows="3" style="margin-left: 15px"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="welfare" class="col-sm-2 control-label">会员福利：</label>
+                    <textarea th:text="${detail.welfare}" name="welfare" id="welfare" class="col-lg-3 input-sm" rows="3" style="margin-left: 15px"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="category" class="col-sm-2 control-label">主要发起人：</label>
+                </div>
+
+                <div id="member">
+                    <div th:each="list,iterStat:${detail.member}">
+                        <input type="hidden" th:value="${list.id}" th:name="${'member['+iterStat.index+'].id'}">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label" th:text="${'发起人'+(iterStat.index+1)+'：'}"></label>
+                        </div>
+                        <div class="form-group">
+                            <label for="memberName" class="col-sm-2 control-label">姓名：</label>
+                            <div class="col-sm-4">
+                                <input th:value="${list.name}" type="text" class="form-control" id="memberName" th:name="${'member['+iterStat.index+'].name'}">
+                            </div>
+                            <label class="col-sm-2 control-label">性别：</label>
+                            <div class="col-sm-4">
+                                <div class="radio">
+                                    <label style="padding-right: 10px"><input type="radio" th:checked="${list.sex == '男'}" th:name="${'member['+iterStat.index+'].sex'}" id="optionsRadios1" value="男">男</label>
+                                    <label><input type="radio" th:checked="${list.sex == '女'}" th:name="${'member['+iterStat.index+'].sex'}" id="optionsRadios2" value="女">女</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="duty" class="col-sm-2 control-label">职务：</label>
+                            <div class="col-sm-4">
+                                <input th:value="${list.duty}" type="text" class="form-control" id="duty" th:name="${'member['+iterStat.index+'].duty'}">
+                            </div>
+                            <label for="institution" class="col-sm-2 control-label">学院：</label>
+                            <div class="col-sm-4">
+                                <input th:value="${list.institution}" type="text" class="form-control" id="institution" th:name="${'member['+iterStat.index+'].institution'}">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="grade" class="col-sm-2 control-label">年级：</label>
+                            <div class="col-sm-4">
+                                <input th:value="${list.grade}" type="text" class="form-control" id="grade" th:name="${'member['+iterStat.index+'].grade'}">
+                            </div>
+                            <label for="phone" class="col-sm-2 control-label">联系方式：</label>
+                            <div class="col-sm-4">
+                                <input th:value="${list.phone}" type="text" class="form-control" id="phone" th:name="${'member['+iterStat.index+'].phone'}">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="qq" class="col-sm-2 control-label">qq：</label>
+                            <div class="col-sm-4">
+                                <input th:value="${list.qq}" type="text" class="form-control" id="qq" th:name="${'member['+iterStat.index+'].qq'}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-4">
+                        <button type="submit" class="btn btn-success" style="width: 100px">保存</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+<script>
+    $(document).ready(function() {
+        $('#myAdd').submit(function() {
+            var options = {
+                success:  showResponse
+            };
+            $(this).ajaxSubmit(options);
+            return false;
+            //非常重要，如果是false，则表明是不跳转
+            //在本页上处理，也就是ajax，如果是非false，则传统的form跳转。
+        });
+    });
+    function showResponse(data) {
+        if (data.resultCode === 0){
+            alert(data.resultInfo);
+            return
+        }
+        alert(data.resultInfo);
+        window.location.href="/association/detail"
+    }
+</script>

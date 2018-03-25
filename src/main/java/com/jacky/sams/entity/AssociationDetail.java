@@ -35,7 +35,7 @@ public class AssociationDetail{
     //是否通过审核 0表示审核不通过，1表示审核通过，2表示待审核
     private Integer pass;
 
-    @OneToMany(cascade = {CascadeType.ALL},fetch = FetchType.LAZY)
+    @OneToMany(cascade = {CascadeType.ALL},fetch = FetchType.EAGER)
     @JoinColumn(name="association_id")
     private List<Member> member;
 

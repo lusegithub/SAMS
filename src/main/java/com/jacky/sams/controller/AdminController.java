@@ -131,7 +131,6 @@ public class AdminController {
     @GetMapping("/association/get/{id}")
     public String getAssociation(Model model,@PathVariable("id") String id){
         AssociationDetail detail=associationService.getAssociation(id);
-        detail.setLogo("/static/image/associationlogo/"+detail.getLogo());
         model.addAttribute("detail",detail);
         return "/admin/association/detail";
     }

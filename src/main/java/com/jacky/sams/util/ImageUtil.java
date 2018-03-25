@@ -1,5 +1,7 @@
 package com.jacky.sams.util;
 
+import com.jacky.sams.entity.SysUser;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
@@ -15,6 +17,8 @@ public class ImageUtil {
      * @throws IOException
      */
     public static String saveImg(MultipartFile multipartFile, String path) throws IOException {
+        SysUser user= (SysUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        path+=user.getUsername();
         File file = new File(path);
         if (!file.exists()) {
             file.mkdirs();
@@ -29,6 +33,6 @@ public class ImageUtil {
         }
         bos.flush();
         bos.close();
-        return fileName;
+        return File.separator +user.getUsername()+File.separator+ fileName;
     }
 }

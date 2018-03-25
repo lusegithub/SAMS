@@ -79,4 +79,8 @@ public class AssociationService {
         detail.setPass(passCode);
         associationDetailRepository.save(detail);
     }
+
+    public void save(AssociationDetail detail){
+        associationDetailRepository.save(detail);
+    }
 }
