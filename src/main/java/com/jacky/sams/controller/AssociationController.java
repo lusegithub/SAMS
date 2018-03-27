@@ -1,12 +1,15 @@
 package com.jacky.sams.controller;
 
 import com.jacky.sams.dao.AssociationDetailRepository;
+import com.jacky.sams.entity.Activity;
 import com.jacky.sams.entity.AssociationDetail;
 import com.jacky.sams.entity.Result;
 import com.jacky.sams.entity.SysUser;
+import com.jacky.sams.service.ActivityService;
 import com.jacky.sams.service.AssociationService;
 import com.jacky.sams.util.ImageUtil;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,6 +22,7 @@ import sun.security.pkcs11.P11Util;
 
 import javax.annotation.Resource;
 import java.io.IOException;
+import java.util.HashMap;
 
 @Controller
 @RequestMapping("/association")
@@ -32,6 +36,9 @@ public class AssociationController {
 
     @Resource
     private AssociationService associationService;
+
+    @Resource
+    private ActivityService activityService;
 
     @RequestMapping(value = "/index")
     public String index(){
@@ -78,6 +85,37 @@ public class AssociationController {
         user.setAssociationDetail(associationDetail);
         result.setResultCode(1);
         result.setResultInfo("修改成功");
+        return result;
+    }
+
+    @RequestMapping("/activity/listPage")
+    public String getActivityPage(Model model){
+        return "association/activity/list";
+    }
+
+    @PostMapping("/activity/list")
+    @ResponseBody
+    public HashMap<String, Object> getActivity(String name, int pageIndex, int pageSize){
+        HashMap<String ,Object> hashMap=new HashMap<>();
+        HashMap<String ,Object> paramMap=new HashMap<>();
+        paramMap.put("name",name);
+        Page<Activity> detailPage=activityService.findAllActivityByPage(paramMap,pageIndex,pageSize);
+        hashMap.put("data",detailPage.getContent());
+        hashMap.put("total",detailPage.getTotalElements());
+        return hashMap;
+    }
+
+    @PostMapping("/activity/add")
+    @ResponseBody
+    public Result addActivity(Activity activity) {
+        SysUser user= (SysUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        AssociationDetail detail=user.getAssociationDetail();
+        Result result=new Result();
+        activity.setDetail(detail);
+        activity.setStatus(2);
+        activityService.addActivity(activity);
+        result.setResultCode(1);
+        result.setResultInfo("添加成功");
         return result;
     }
 }
