@@ -18,6 +18,9 @@ public class Activity {
     //活动名称
     private String name;
 
+    //活动简介
+    private String description;
+
     //活动内容
     private String content;
 
@@ -121,5 +124,13 @@ public class Activity {
 
     public void setStatus(Integer status) {
         this.status = status;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

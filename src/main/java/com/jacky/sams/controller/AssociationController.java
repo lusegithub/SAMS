@@ -118,4 +118,10 @@ public class AssociationController {
         result.setResultInfo("添加成功");
         return result;
     }
+
+    @PostMapping("/activity/delete")
+    @ResponseBody
+    public void deleteActivity(String ids){
+        activityService.deleteById(ids);
+    }
 }

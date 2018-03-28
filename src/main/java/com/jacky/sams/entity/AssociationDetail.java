@@ -32,6 +32,12 @@ public class AssociationDetail{
     //会员福利
     private String welfare;
 
+    //申请时间
+    private String applyTime;
+
+    //成立时间（审核通过时间）
+    private String buildTime;
+
     //是否通过审核 0表示审核不通过，1表示审核通过，2表示待审核
     private Integer pass;
 
@@ -109,5 +115,21 @@ public class AssociationDetail{
 
     public void setMember(List<Member> member) {
         this.member = member;
+    }
+
+    public String getApplyTime() {
+        return applyTime;
+    }
+
+    public void setApplyTime(String applyTime) {
+        this.applyTime = applyTime;
+    }
+
+    public String getBuildTime() {
+        return buildTime;
+    }
+
+    public void setBuildTime(String buildTime) {
+        this.buildTime = buildTime;
     }
 }

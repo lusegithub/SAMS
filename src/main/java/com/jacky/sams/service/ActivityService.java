@@ -33,4 +33,11 @@ public class ActivityService {
     public void addActivity(Activity activity){
         activityRepository.save(activity);
     }
+
+    public void deleteById(String ids){
+        String[] id=ids.split(",");
+        for (String anId : id) {
+            activityRepository.deleteById(anId);
+        }
+    }
 }

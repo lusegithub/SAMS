@@ -24,16 +24,7 @@
         <div class="panel-body form-group" style="margin-bottom:0px;">
             <label class="col-sm-1 control-label" style="text-align: right; margin-top:5px">名称：</label>
             <div class="col-sm-2">
-                <input type="text" class="form-control" name="Name" id="search_name"/>
-            </div>
-            <label class="col-sm-1 control-label" style="text-align: right; margin-top:5px">社团：</label>
-            <div class="col-sm-2">
-                <select id="search_category" class="form-control" name="category">
-                    <option value="">选择类别</option>
-                    <option value="人文学术">人文学术</option>
-                    <option value="文娱体育">文娱体育</option>
-                    <option value="社会服务">社会服务</option>
-                </select>
+                <input type="text" class="form-control" name="name" id="search_name"/>
             </div>
             <label class="col-sm-1 control-label" style="text-align: right; margin-top:5px">状态：</label>
             <div class="col-sm-2">
@@ -76,15 +67,19 @@
                 <div class="modal-body">
                     <form id="myAdd" class="form-group" method="post" th:action="@{/association/activity/add}">
                         <div class="form-group">
-                            <label for="name">活动名称</label>
+                            <label for="name">名称</label>
                             <input id="name" name="name" class="form-control" type="text" placeholder="">
                         </div>
                         <div class="form-group">
-                            <label for="content">活动内容</label>
+                            <label for="description">简介</label>
+                            <textarea name="description" id="description" class="form-control" rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="content">内容</label>
                             <textarea name="content" id="content" class="form-control" rows="5"></textarea>
                         </div>
                         <div class="form-group">
-                            <label style="display: block">举办时间</label>
+                            <label style="display: block">时间</label>
                             <label class="form-inline">
                                 <input name="startTime" class="form-control" style="width: 40%" type="text" id="startTime">
                                 <label>-</label>
@@ -92,7 +87,7 @@
                             </label>
                         </div>
                         <div class="form-group">
-                            <label for="location">举办地点</label>
+                            <label for="location">地点</label>
                             <input id="location" name="location" class="form-control" type="text">
                         </div>
                         <div class="form-group">
@@ -215,7 +210,7 @@
                 field:'id',
                 visible:false
             },{
-                title:'活动名称',
+                title:'名称',
                 field:'name'
             },{
                 title:'举办地点',
@@ -226,6 +221,9 @@
             },{
                 title:'结束时间',
                 field:'endTime'
+            },{
+                title:'简介',
+                field:'description'
             },{
                 title:'报名人数',
                 field:'students',
@@ -255,7 +253,6 @@
 
     //请求服务数据时所传参数
     function queryParams(params){
-        var category=$("#search_category").find("option:selected").val();
         var pass = $("#search_pass").find("option:selected").val();
         return{
             //每页多少条数据
@@ -263,7 +260,6 @@
             //请求第几页
             pageIndex: params.pageNumber,
             name: $('#search_name').val(),
-            category: category,
             pass: pass
         }
     }
@@ -290,14 +286,14 @@
         }
         ids = ids.substring(0, ids.length - 1);
         $.ajax({
-            url: "/admin/association/delete",
+            url: "/association/activity/delete",
             type: "post",
             data: {
                 ids: ids
             },
             success: function () {
                 alert("删除成功");
-                $('#mytab').bootstrapTable('refresh', {url: '/admin/association/list',pageNumber:1,pageSize:10})
+                $('#mytab').bootstrapTable('refresh', {url: '/association/activity/list',pageNumber:1,pageSize:10})
             },
             error: function () {
                 alert("删除失败")

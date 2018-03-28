@@ -16,6 +16,9 @@ public class Student {
     //姓名
     private String name;
 
+    //学号
+    private String stuNo;
+
     //性别
     private String sex;
 
@@ -43,6 +46,10 @@ public class Student {
     //个人描述
     private String description;
 
+    @OneToOne(cascade = {CascadeType.REFRESH},fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id")
+    private SysUser user;
+
     @ManyToMany(cascade = {CascadeType.ALL},fetch = FetchType.EAGER)
     private List<AssociationDetail> associations;
 
@@ -52,6 +59,14 @@ public class Student {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getStuNo() {
+        return stuNo;
+    }
+
+    public void setStuNo(String stuNo) {
+        this.stuNo = stuNo;
     }
 
     public String getSex() {
@@ -140,5 +155,13 @@ public class Student {
 
     public void setAssociations(List<AssociationDetail> associations) {
         this.associations = associations;
+    }
+
+    public SysUser getUser() {
+        return user;
+    }
+
+    public void setUser(SysUser user) {
+        this.user = user;
     }
 }

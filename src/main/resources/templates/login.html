@@ -7,6 +7,7 @@
     <link rel="stylesheet" type="text/css" href="/static/css/signin.css"/>
     <script src="/webjars/jquery/3.1.1/jquery.min.js"></script>
     <script src="/webjars/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script src="/static/js/common/jQuery.Form.js"></script>
     <style type="text/css">
         .starter-template {
             padding: 40px 15px;
@@ -15,17 +16,21 @@
     </style>
 </head>
 <body>
-<nav class="navbar navbar-default" role="navigation">
-    <div class="container-fluid">
+<nav class="navbar navbar-default navbar-static-top" role="navigation">
+    <div class="container">
         <div class="navbar-header">
-            <button type="button" class="navbar-toggle" data-toggle="collapse"
-                    data-target="#example-navbar-collapse">
-                <span class="sr-only">切换导航</span>
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
             <a class="navbar-brand" th:href="@{/login}">学生社团管理系统</a>
+        </div>
+        <div class="collapse navbar-collapse" id="navbar">
+            <ul class="nav navbar-nav navbar-right main-nav">
+                <li><a href="javascript:void(0)" onclick="signUp()">学生注册</a></li>
+            </ul>
         </div>
     </div>
 </nav>
@@ -45,6 +50,93 @@
             <input type="submit" id="login" value="Login" class="btn btn-primary"/>
         </form>
     </div>
+
+    <!-- 模态框（Modal） -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="myModalLabel">注册账号</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="myAdd" class="form-group" method="post" th:action="@{/student/signup}">
+                        <div class="form-group">
+                            <label for="username">账号</label>
+                            <input id="username" name="username" class="form-control" type="text" placeholder="">
+                        </div>
+                        <div class="form-group">
+                            <label for="password">密码</label>
+                            <input id="password" name="password" class="form-control" type="password" placeholder="至少6位字母或数字">
+                        </div>
+                        <div class="form-group">
+                            <label for="name">姓名</label>
+                            <input id="name" name="name" class="form-control" type="text" placeholder="">
+                        </div>
+                        <div class="form-group">
+                            <label for="stuNo">学号</label>
+                            <input id="stuNo" name="stuNo" class="form-control" type="text" placeholder="">
+                        </div>
+                        <div class="form-group">
+                            <label for="institution">学院</label>
+                            <input id="institution" name="institution" class="form-control" type="text" placeholder="">
+                        </div>
+                        <div class="form-group">
+                            <label for="profession">专业</label>
+                            <input id="profession" name="profession" class="form-control" type="text" placeholder="">
+                        </div>
+                        <div class="text-center">
+                            <button id="save" class="btn btn-primary" type="submit">注册</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 模态框（Modal） -->
 </div>
 </body>
 </html>
+<script>
+
+    $(document).ready(function() {
+        $('#myAdd').submit(function() {
+            var options = {
+                success:  showResponse
+            };
+            $(this).ajaxSubmit(options);
+            return false;
+            //非常重要，如果是false，则表明是不跳转
+            //在本页上处理，也就是ajax，如果是非false，则传统的form跳转。
+        });
+    });
+
+    function showResponse() {
+        alert("注册成功");
+        window.location.href="/login"
+    }
+
+    $('#myModal').on('show.bs.modal', centerModals);
+    //禁用空白处点击关闭
+    //    $('#myModal').modal({
+    //        backdrop: 'static',
+    //        keyboard: false,//禁止键盘
+    //        show:false
+    //    });
+    //页面大小变化是仍然保证模态框水平垂直居中
+    $(window).on('resize', centerModals);
+
+    function centerModals() {
+        $('#myModal').each(function(i) {
+            var $clone = $(this).clone().css('display','block').appendTo('body');
+            var top = Math.round(($clone.height() - $clone.find('.modal-content').height()) / 2);
+            top = top > 0 ? top : 0;
+            $clone.remove();
+            $(this).find('.modal-content').css("margin-top", top);
+        });
+    }
+
+    function signUp() {
+        $('#myModal').modal('show')
+    }
+</script>

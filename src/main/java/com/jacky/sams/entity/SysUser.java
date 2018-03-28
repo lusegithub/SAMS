@@ -20,6 +20,8 @@ public class SysUser implements UserDetails {
     private String username;
     private String password;
 
+    private String signUpTime;
+
     @OneToOne(cascade = {CascadeType.REFRESH},fetch = FetchType.EAGER)
     @JoinColumn(name = "rid")
     private SysRole role;
@@ -50,6 +52,14 @@ public class SysUser implements UserDetails {
 
     public void setRole(SysRole role) {
         this.role = role;
+    }
+
+    public String getSignUpTime() {
+        return signUpTime;
+    }
+
+    public void setSignUpTime(String signUpTime) {
+        this.signUpTime = signUpTime;
     }
 
     public AssociationDetail getAssociationDetail() {

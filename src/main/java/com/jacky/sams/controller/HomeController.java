@@ -21,7 +21,7 @@ public class HomeController {
         } else if (auth.getAuthorities().toString().equals("[ROLE_ASSOCIATION]")){
             return "redirect:association/index";
         } else {
-            return "redirect:error";
+            return "redirect:student/index";
         }
     }
 
@@ -42,5 +42,10 @@ public class HomeController {
     @RequestMapping(value="/association/header", method = RequestMethod.POST)
     public String associationHeader(HttpServletRequest request, HttpServletResponse response) {
         return "/association/common/header";
+    }
+
+    @RequestMapping(value="/student/header", method = RequestMethod.POST)
+    public String studentHeader(HttpServletRequest request, HttpServletResponse response) {
+        return "/student/common/header";
     }
 }

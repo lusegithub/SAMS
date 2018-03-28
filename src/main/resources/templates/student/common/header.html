@@ -1,25 +1,23 @@
-<nav class="navbar navbar-default" role="navigation">
+<nav class="navbar navbar-default navbar-static-top" role="navigation">
     <div class="container">
         <div class="navbar-header">
-            <button type="button" class="navbar-toggle" data-toggle="collapse"
-                    data-target="#example-navbar-collapse">
-                <span class="sr-only">切换导航</span>
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" th:href="@{/association/index}">学生社团管理系统</a>
+            <a class="navbar-brand" th:href="@{/student/index}">学生社团管理系统</a>
         </div>
         <div class="collapse navbar-collapse" id="example-navbar-collapse">
             <ul class="nav navbar-nav navbar-right main-nav">
-                <li><a href="#">会员管理</a></li>
-                <li><a th:href="@{/association/activity/listPage}">活动管理</a></li>
+                <li><a href="#">社团列表</a></li>
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                         个人中心 <b class="caret"></b>
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a th:href="@{/association/detail}">基本信息</a></li>
+                        <li><a th:href="@{/student/detail}">个人信息</a></li>
                         <li><a th:href="@{/logout}">注销</a></li>
                     </ul>
                 </li>
