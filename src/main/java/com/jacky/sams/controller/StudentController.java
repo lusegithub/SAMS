@@ -1,20 +1,26 @@
 package com.jacky.sams.controller;
 
+import com.jacky.sams.entity.AssociationDetail;
 import com.jacky.sams.entity.Student;
 import com.jacky.sams.entity.SysRole;
 import com.jacky.sams.entity.SysUser;
+import com.jacky.sams.service.AssociationService;
 import com.jacky.sams.service.StudentService;
 import com.jacky.sams.service.SysRoleService;
 import com.jacky.sams.service.SysUserService;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 @Controller
 @RequestMapping("/student")
@@ -28,6 +34,9 @@ public class StudentController {
 
     @Resource
     private SysUserService userService;
+
+    @Resource
+    private AssociationService associationService;
 
     @PostMapping("/signup")
     @ResponseBody
@@ -49,6 +58,67 @@ public class StudentController {
 
     @RequestMapping(value = "/detail")
     public String detail(Model model){
+        SysUser user= (SysUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Student student=studentService.findStudentByUserId(user.getId());
+        model.addAttribute("student",student);
         return "student/detail";
+    }
+
+    @PostMapping(value = "/detail/edit")
+    @ResponseBody
+    public void editDetail(Student student){
+        Student oldStudent=studentService.findOne(student.getId());
+        student.setUser(oldStudent.getUser());
+        student.setAssociations(student.getAssociations());
+        studentService.addStudent(student);
+    }
+
+    @PostMapping(value = "/modifyPwd")
+    @ResponseBody
+    public void modifyPwd(String pwd, HttpServletRequest request, HttpServletResponse response){
+        SysUser user= (SysUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        user.setPassword(pwd);
+        userService.addUser(user);
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null){
+            new SecurityContextLogoutHandler().logout(request, response, auth);
+        }
+    }
+
+    @RequestMapping(value = "/associationList")
+    public String associationList(Model model){
+        List<AssociationDetail> details=associationService.getAssociation();
+        model.addAttribute("associations",details);
+        return "student/association/list";
+    }
+
+    @GetMapping("/association/get/{id}")
+    public String getAssociation(Model model,@PathVariable("id") String id){
+        AssociationDetail detail=associationService.getAssociation(id);
+        model.addAttribute("detail",detail);
+        SysUser user= (SysUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Student student=studentService.findStudentByUserId(user.getId());
+        List<AssociationDetail> associations=student.getAssociations();
+        boolean flag=false;
+        for (AssociationDetail associationDetail:associations){
+            if (associationDetail.getId().equals(detail.getId())){
+                flag=true;
+                break;
+            }
+        }
+        model.addAttribute("flag",flag);
+        return "student/association/detail";
+    }
+
+    @PostMapping("/association/enter")
+    @ResponseBody
+    public void enterAssociation(String id){
+        SysUser user= (SysUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Student student=studentService.findStudentByUserId(user.getId());
+        AssociationDetail detail=associationService.getAssociation(id);
+        List<AssociationDetail> associations=student.getAssociations();
+        associations.add(detail);
+        student.setAssociations(associations);
+        studentService.addStudent(student);
     }
 }

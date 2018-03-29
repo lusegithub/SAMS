@@ -4,15 +4,198 @@
     <meta charset="UTF-8">
     <title>学生社团管理系统</title>
     <link rel="stylesheet" href="/webjars/bootstrap/3.3.5/css/bootstrap.min.css"/>
+    <link rel="stylesheet" type="text/css" href="/static/css/common/bootstrap-datetimepicker.css"/>
     <script src="/webjars/jquery/3.1.1/jquery.min.js"></script>
     <script src="/webjars/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script src="/static/js/common/jQuery.Form.js"></script>
+    <script src="/static/js/common/bootstrap-datetimepicker.js"></script>
+    <script src="/static/locales/bootstrap-datetimepicker.zh-CN.js"></script>
     <script src="/static/js/student/header.js"></script>
 </head>
 <body>
 <div id="header"></div>
 
 <div class="container">
-    <p>个人信息</p>
+    <div class="row">
+        <div class="col-md-12">
+            <fieldset class="text-center">
+                <legend>基本信息</legend>
+            </fieldset>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3">
+        </div>
+        <div class="col-md-9">
+            <form id="myAdd" class="form-horizontal" role="form" style="width: auto" th:action="@{/student/detail/edit}" th:method="post">
+                <input type="hidden" name="id" id="id" th:value="${student.id}">
+                <div class="form-group">
+                    <label for="name" class="col-sm-2 control-label">姓名</label>
+                    <div class="col-sm-4">
+                        <input th:value="${student.name}" type="text" class="form-control" id="name" name="name">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">性别</label>
+                    <div class="col-sm-4">
+                        <div class="radio">
+                            <label style="padding-right: 10px"><input th:checked="${student.sex == '男'}" type="radio" name="sex" id="optionsRadios1" value="男" checked>男</label>
+                            <label><input th:checked="${student.sex == '女'}" type="radio" name="sex" id="optionsRadios2" value="女">女</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="birthday" class="col-sm-2 control-label">生日</label>
+                    <div class="col-sm-4">
+                        <input th:value="${student.birthday}" name="birthday" class="form-control" type="text" id="birthday">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="name" class="col-sm-2 control-label">学号</label>
+                    <div class="col-sm-4">
+                        <input th:value="${student.stuNo}" type="text" class="form-control" id="stuNo" name="stuNo">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="name" class="col-sm-2 control-label">学院</label>
+                    <div class="col-sm-4">
+                        <input th:value="${student.institution}" type="text" class="form-control" id="institution" name="institution">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="name" class="col-sm-2 control-label">专业</label>
+                    <div class="col-sm-4">
+                        <input th:value="${student.profession}" type="text" class="form-control" id="profession" name="profession">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="name" class="col-sm-2 control-label">年级</label>
+                    <div class="col-sm-4">
+                        <input th:value="${student.grade}" type="text" class="form-control" id="grade" name="grade">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="name" class="col-sm-2 control-label">班级</label>
+                    <div class="col-sm-4">
+                        <input th:value="${student.className}" type="text" class="form-control" id="className" name="className">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="name" class="col-sm-2 control-label">宿舍地址</label>
+                    <div class="col-sm-4">
+                        <input th:value="${student.address}" type="text" class="form-control" id="address" name="address">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="name" class="col-sm-2 control-label">联系电话</label>
+                    <div class="col-sm-4">
+                        <input th:value="${student.phone}" type="text" class="form-control" id="phone" name="phone">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="description" class="col-sm-2 control-label">个人描述</label>
+                    <textarea th:text="${student.description}" placeholder="描述一下自己，让大家更好地认识你～" name="description" id="description" class="col-lg-5 input-sm" rows="4" style="margin-left: 15px"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-md-2 col-md-offset-3">
+                        <button type="submit" class="btn btn-success" style="width: 100px">保存</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <fieldset class="text-center">
+                <legend>密码修改</legend>
+            </fieldset>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3">
+        </div>
+        <div class="col-md-9">
+            <form id="modify" class="form-horizontal" role="form" style="width: auto">
+                <div class="form-group">
+                    <label for="password" class="col-sm-2 control-label">新密码</label>
+                    <div class="col-sm-4">
+                        <input type="password" class="form-control" id="password" name="password" placeholder="至少6位字母或数字">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password" class="col-sm-2 control-label">确认密码</label>
+                    <div class="col-sm-4">
+                        <input type="password" class="form-control" id="npassword" name="npassword" placeholder="至少6位字母或数字">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-md-2 col-md-offset-3">
+                        <button type="button" class="btn btn-success" style="width: 100px" onclick="pwd()">保存</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 </body>
 </html>
+<script>
+    $('#birthday').datetimepicker({
+        minView: "month",
+        format: 'yyyy-mm-dd',
+        language: 'zh-CN',
+        autoclose: true
+    });
+    $(document).ready(function() {
+        $('#myAdd').submit(function() {
+            var options = {
+                success:  showResponse
+            };
+            $(this).ajaxSubmit(options);
+            return false;
+            //非常重要，如果是false，则表明是不跳转
+            //在本页上处理，也就是ajax，如果是非false，则传统的form跳转。
+        });
+    });
+    function showResponse(data) {
+        alert("修改成功")
+        window.location.href="/student/detail"
+    }
+
+    function pwd() {
+        var pwd=$("#password").val();
+        var npwd=$("#npassword").val();
+        if (pwd!==npwd){
+            alert("两次密码输入不一致，请重新输入");
+            return
+        }
+        $.ajax({
+            url: '/student/modifyPwd',
+            type: 'post',
+            data: {
+                pwd: pwd
+            },
+            success: function () {
+                alert("密码修改成功，请重新登录");
+                window.location.href="/login"
+            },
+            error: function () {
+                alert("网络错误")
+            }
+        })
+    }
+</script>

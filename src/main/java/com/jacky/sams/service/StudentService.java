@@ -15,4 +15,12 @@ public class StudentService {
     public void addStudent(Student student){
         repository.save(student);
     }
+
+    public Student findStudentByUserId(String userId){
+        return repository.findByUser_Id(userId);
+    }
+
+    public Student findOne(String id){
+        return repository.findById(id).orElse(null);
+    }
 }
