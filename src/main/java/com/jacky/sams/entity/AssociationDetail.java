@@ -12,6 +12,7 @@ public class AssociationDetail{
     @Id
     @GeneratedValue(generator = "system-uuid")
     @GenericGenerator(name = "system-uuid", strategy = "uuid")
+    @Column(length = 50)
     private String id;
 
     //社团全称
@@ -44,6 +45,9 @@ public class AssociationDetail{
     @OneToMany(cascade = {CascadeType.ALL},fetch = FetchType.EAGER)
     @JoinColumn(name="association_id")
     private List<Member> member;
+
+    @OneToMany(mappedBy = "association", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<StudentAssociation> studentAssociations;
 
     public String getId() {
         return id;
@@ -131,5 +135,13 @@ public class AssociationDetail{
 
     public void setBuildTime(String buildTime) {
         this.buildTime = buildTime;
+    }
+
+    public Set<StudentAssociation> getStudentAssociations() {
+        return studentAssociations;
+    }
+
+    public void setStudentAssociations(Set<StudentAssociation> studentAssociations) {
+        this.studentAssociations = studentAssociations;
     }
 }

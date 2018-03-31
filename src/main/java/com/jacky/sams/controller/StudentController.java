@@ -1,9 +1,6 @@
 package com.jacky.sams.controller;
 
-import com.jacky.sams.entity.AssociationDetail;
-import com.jacky.sams.entity.Student;
-import com.jacky.sams.entity.SysRole;
-import com.jacky.sams.entity.SysUser;
+import com.jacky.sams.entity.*;
 import com.jacky.sams.service.AssociationService;
 import com.jacky.sams.service.StudentService;
 import com.jacky.sams.service.SysRoleService;
@@ -21,6 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 @Controller
 @RequestMapping("/student")
@@ -69,7 +67,7 @@ public class StudentController {
     public void editDetail(Student student){
         Student oldStudent=studentService.findOne(student.getId());
         student.setUser(oldStudent.getUser());
-        student.setAssociations(student.getAssociations());
+        student.setStudentAssociations(oldStudent.getStudentAssociations());
         studentService.addStudent(student);
     }
 
@@ -98,10 +96,10 @@ public class StudentController {
         model.addAttribute("detail",detail);
         SysUser user= (SysUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Student student=studentService.findStudentByUserId(user.getId());
-        List<AssociationDetail> associations=student.getAssociations();
+        Set<StudentAssociation> associations=student.getStudentAssociations();
         boolean flag=false;
-        for (AssociationDetail associationDetail:associations){
-            if (associationDetail.getId().equals(detail.getId())){
+        for (StudentAssociation studentAssociation:associations){
+            if (studentAssociation.getAssociation().getId().equals(detail.getId())){
                 flag=true;
                 break;
             }
@@ -116,9 +114,15 @@ public class StudentController {
         SysUser user= (SysUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Student student=studentService.findStudentByUserId(user.getId());
         AssociationDetail detail=associationService.getAssociation(id);
-        List<AssociationDetail> associations=student.getAssociations();
-        associations.add(detail);
-        student.setAssociations(associations);
+        StudentAssociation studentAssociation=new StudentAssociation();
+        studentAssociation.setAssociation(detail);
+        studentAssociation.setStudent(student);
+        studentAssociation.setStatus(2);
+        Date date=new Date();
+        SimpleDateFormat formatter=new SimpleDateFormat("yyyy-MM-dd");
+        studentAssociation.setApplyTime(formatter.format(date));
+        detail.getStudentAssociations().add(studentAssociation);
         studentService.addStudent(student);
+        associationService.addAssociation(detail);
     }
 }

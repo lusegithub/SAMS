@@ -2,6 +2,7 @@ package com.jacky.sams.controller;
 
 import com.jacky.sams.entity.*;
 import com.jacky.sams.service.AssociationService;
+import com.jacky.sams.service.StudentService;
 import com.jacky.sams.service.SysRoleService;
 import com.jacky.sams.service.SysUserService;
 import com.jacky.sams.util.ImageUtil;
@@ -35,6 +36,9 @@ public class AdminController {
 
     @Resource
     private AssociationService associationService;
+
+    @Resource
+    private StudentService studentService;
 
     @RequestMapping(value = "/index")
     public String index(){
@@ -139,5 +143,27 @@ public class AdminController {
     @ResponseBody
     public void pass(String id,Integer passCode){
         associationService.pass(id,passCode);
+    }
+
+    @RequestMapping("/student/listPage")
+    public String getStudentPage(Model model){
+        return "/admin/student/list";
+    }
+
+    @PostMapping("/student/list")
+    @ResponseBody
+    public HashMap<String, Object> getStudents(String name,int pageIndex,int pageSize){
+        HashMap<String ,Object> hashMap=new HashMap<>();
+        HashMap<String ,Object> paramMap=new HashMap<>();
+        paramMap.put("name",name);
+        Page<Student> students=studentService.findAllStudentByPage(paramMap,pageIndex,pageSize);
+        hashMap.put("data",students.getContent());
+        hashMap.put("total",students.getTotalElements());
+        return hashMap;
+    }
+
+    @RequestMapping("/activity/listPage")
+    public String getActivityPage(Model model){
+        return "/admin/activity/list";
     }
 }

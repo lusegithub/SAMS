@@ -19,27 +19,9 @@
     <div class="panel panel-default">
         <div class="panel-heading">查询条件</div>
         <div class="panel-body form-group" style="margin-bottom:0px;">
-            <label class="col-sm-1 control-label" style="text-align: right; margin-top:5px">名称：</label>
+            <label class="col-sm-1 control-label" style="text-align: right; margin-top:5px">姓名：</label>
             <div class="col-sm-2">
                 <input type="text" class="form-control" name="Name" id="search_name"/>
-            </div>
-            <label class="col-sm-1 control-label" style="text-align: right; margin-top:5px">类别：</label>
-            <div class="col-sm-2">
-                <select id="search_category" class="form-control" name="category">
-                    <option value="">选择类别</option>
-                    <option value="人文学术">人文学术</option>
-                    <option value="文娱体育">文娱体育</option>
-                    <option value="社会服务">社会服务</option>
-                </select>
-            </div>
-            <label class="col-sm-1 control-label" style="text-align: right; margin-top:5px">状态：</label>
-            <div class="col-sm-2">
-                <select id="search_pass" class="form-control" name="pass">
-                    <option value="">选择状态</option>
-                    <option value="2">待审核</option>
-                    <option value="1">已通过</option>
-                    <option value="0">未通过</option>
-                </select>
             </div>
             <div class="col-sm-1 control-label">
                 <button class="btn btn-primary" id="search_btn">查询</button>
@@ -145,7 +127,7 @@
     $('#mytab').bootstrapTable({
         method: 'post',
         contentType: "application/x-www-form-urlencoded",//必须要有！！！！
-        url:"/admin/association/list",//要请求数据的文件路径
+        url:"/admin/student/list",//要请求数据的文件路径
         height:tableHeight(),//高度调整
         striped: true, //是否显示行间隔色
         dataField: "data",//bootstrap table 可以前端分页也可以后端分页，这里
@@ -179,26 +161,31 @@
                 field:'id',
                 visible:false
             },{
-                title:'社团全称',
+                title:'姓名',
                 field:'name'
-            },
-            {
-                title:'类别',
-                field:'category'
             },{
-                title:'宗旨',
-                field:'purpose'
+                title:'性别',
+                field:'sex'
             },{
-                title:'状态',
-                field:'pass',
+                title:'学号',
+                field:'stuNo'
+            },{
+                title:'学院',
+                field:'institution'
+            },{
+                title:'专业',
+                field:'profession'
+            },{
+                title:'年级',
+                field:'grade'
+            },{
+                title:'联系电话',
+                field:'phone'
+            },{
+                title:'注册时间',
+                field:'user',
                 formatter:function(value,row,index){
-                    if(value==0){
-                        return '<i class="fa fa-lock" style="color:red">未通过</i>'
-                    }else if(value==1){
-                        return '<i class="fa fa-unlock" style="color:green">已通过</i>'
-                    }else{
-                        return '<i class="fa fa-unlock" style="color:gray">待审核</i>'
-                    }
+                    return value.signUpTime
                 }
             }
         ],
@@ -211,21 +198,17 @@
 
     //请求服务数据时所传参数
     function queryParams(params){
-        var category=$("#search_category").find("option:selected").val();
-        var pass = $("#search_pass").find("option:selected").val();
         return{
             //每页多少条数据
             pageSize: params.limit,
             //请求第几页
             pageIndex: params.pageNumber,
-            name: $('#search_name').val(),
-            category: category,
-            pass: pass
+            name: $('#search_name').val()
         }
     }
     //查询按钮事件
     $('#search_btn').click(function(){
-        $('#mytab').bootstrapTable('refreshOptions', {url: '/admin/association/list',pageNumber:1,pageSize:10});
+        $('#mytab').bootstrapTable('refreshOptions', {url: '/admin/student/list',pageNumber:1,pageSize:10});
     });
     //tableHeight函数
     function tableHeight(){
@@ -261,7 +244,7 @@
         })
     }
 
-    
+
     function goDetail() {
         var rows = $("#mytab").bootstrapTable('getSelections');
         if (rows.length=== 0) {

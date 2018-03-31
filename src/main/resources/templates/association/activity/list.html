@@ -213,6 +213,9 @@
                 title:'名称',
                 field:'name'
             },{
+                title:'简介',
+                field:'description'
+            },{
                 title:'举办地点',
                 field:'location'
             },{
@@ -222,11 +225,8 @@
                 title:'结束时间',
                 field:'endTime'
             },{
-                title:'简介',
-                field:'description'
-            },{
                 title:'报名人数',
-                field:'students',
+                field:'studentActivities',
                 formatter:function(value,row,index){
                     return value.length;
                 }

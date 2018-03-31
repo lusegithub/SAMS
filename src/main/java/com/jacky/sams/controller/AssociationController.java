@@ -1,28 +1,27 @@
 package com.jacky.sams.controller;
 
 import com.jacky.sams.dao.AssociationDetailRepository;
-import com.jacky.sams.entity.Activity;
-import com.jacky.sams.entity.AssociationDetail;
-import com.jacky.sams.entity.Result;
-import com.jacky.sams.entity.SysUser;
+import com.jacky.sams.dao.impl.CommonDao;
+import com.jacky.sams.entity.*;
 import com.jacky.sams.service.ActivityService;
 import com.jacky.sams.service.AssociationService;
+import com.jacky.sams.service.StudentService;
 import com.jacky.sams.util.ImageUtil;
+import com.jacky.sams.vo.StudentAssociationVo;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import sun.security.pkcs11.P11Util;
 
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 
 @Controller
 @RequestMapping("/association")
@@ -39,6 +38,12 @@ public class AssociationController {
 
     @Resource
     private ActivityService activityService;
+
+    @Resource
+    private StudentService studentService;
+
+    @Resource
+    private CommonDao commonDao;
 
     @RequestMapping(value = "/index")
     public String index(){
@@ -123,5 +128,38 @@ public class AssociationController {
     @ResponseBody
     public void deleteActivity(String ids){
         activityService.deleteById(ids);
+    }
+
+    @RequestMapping("/associator/listPage")
+    public String getAssociatorPage(Model model){
+        return "association/associator/list";
+    }
+
+    @PostMapping("/associator/list")
+    @ResponseBody
+    public HashMap<String, Object> getAssociator(String name,Integer status, int pageIndex, int pageSize){
+        SysUser user= (SysUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        AssociationDetail detail=user.getAssociationDetail();
+        HashMap<String ,Object> hashMap=new HashMap<>();
+        HashMap<String ,Object> paramMap=new HashMap<>();
+        paramMap.put("association_id",detail.getId());
+        if (!StringUtils.isEmpty(name)){
+            paramMap.put("name","%"+name+"%");
+        }
+        if (!StringUtils.isEmpty(status)){
+            paramMap.put("status",status);
+        }
+        Page<Student> students=studentService.findStudentsByAssociation(paramMap,pageIndex,pageSize);
+        hashMap.put("data",students.getContent());
+        hashMap.put("total",students.getTotalElements());
+        return hashMap;
+    }
+
+    @PostMapping("/associator/pass")
+    @ResponseBody
+    public void pass(String ids){
+        SysUser user= (SysUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        AssociationDetail detail=user.getAssociationDetail();
+        studentService.updateStatus(ids,detail.getId());
     }
 }

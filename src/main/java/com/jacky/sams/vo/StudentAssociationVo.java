@@ -1,18 +1,7 @@
-package com.jacky.sams.entity;
+package com.jacky.sams.vo;
 
-import org.hibernate.annotations.GenericGenerator;
+public class StudentAssociationVo {
 
-import javax.persistence.*;
-import java.util.List;
-import java.util.Set;
-
-@Entity
-public class Student {
-
-    @Id
-    @GeneratedValue(generator = "system-uuid")
-    @GenericGenerator(name = "system-uuid", strategy = "uuid")
-    @Column(length = 50)
     private String id;
 
     //姓名
@@ -48,15 +37,19 @@ public class Student {
     //个人描述
     private String description;
 
-    @OneToOne(cascade = {CascadeType.REFRESH},fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_id")
-    private SysUser user;
+    private int status;
 
-    @OneToMany(mappedBy = "student")
-    private Set<StudentAssociation> studentAssociations;
+    private String applyTime;
 
-    @OneToMany(mappedBy = "student")
-    private Set<StudentActivity> studentActivities;
+    private String enterTime;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String getName() {
         return name;
@@ -146,35 +139,27 @@ public class Student {
         this.description = description;
     }
 
-    public String getId() {
-        return id;
+    public int getStatus() {
+        return status;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setStatus(int status) {
+        this.status = status;
     }
 
-    public Set<StudentAssociation> getStudentAssociations() {
-        return studentAssociations;
+    public String getApplyTime() {
+        return applyTime;
     }
 
-    public void setStudentAssociations(Set<StudentAssociation> studentAssociations) {
-        this.studentAssociations = studentAssociations;
+    public void setApplyTime(String applyTime) {
+        this.applyTime = applyTime;
     }
 
-    public SysUser getUser() {
-        return user;
+    public String getEnterTime() {
+        return enterTime;
     }
 
-    public void setUser(SysUser user) {
-        this.user = user;
-    }
-
-    public Set<StudentActivity> getStudentActivities() {
-        return studentActivities;
-    }
-
-    public void setStudentActivities(Set<StudentActivity> studentActivities) {
-        this.studentActivities = studentActivities;
+    public void setEnterTime(String enterTime) {
+        this.enterTime = enterTime;
     }
 }

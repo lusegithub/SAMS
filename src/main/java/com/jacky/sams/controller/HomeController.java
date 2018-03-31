@@ -36,7 +36,7 @@ public class HomeController {
 
     @RequestMapping(value="/header", method = RequestMethod.POST)
     public String header(HttpServletRequest request, HttpServletResponse response) {
-        return "/common/header";
+        return "admin/common/header";
     }
 
     @RequestMapping(value="/association/header", method = RequestMethod.POST)

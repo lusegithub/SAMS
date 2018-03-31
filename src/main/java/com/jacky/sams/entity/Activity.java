@@ -13,6 +13,7 @@ public class Activity {
     @Id
     @GeneratedValue(generator = "system-uuid")
     @GenericGenerator(name = "system-uuid", strategy = "uuid")
+    @Column(length = 50)
     private String id;
 
     //活动名称
@@ -43,8 +44,8 @@ public class Activity {
     @JoinColumn(name = "aid")
     private AssociationDetail detail;
 
-    @ManyToMany(cascade = {CascadeType.ALL},fetch = FetchType.EAGER)
-    private Set<Student> students;
+    @OneToMany(mappedBy = "activity")
+    private Set<StudentActivity> studentActivities;
 
     public String getName() {
         return name;
@@ -102,12 +103,12 @@ public class Activity {
         this.id = id;
     }
 
-    public Set<Student> getStudents() {
-        return students;
+    public Set<StudentActivity> getStudentActivities() {
+        return studentActivities;
     }
 
-    public void setStudents(Set<Student> students) {
-        this.students = students;
+    public void setStudentActivities(Set<StudentActivity> studentActivities) {
+        this.studentActivities = studentActivities;
     }
 
     public AssociationDetail getDetail() {
