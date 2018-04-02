@@ -37,7 +37,16 @@ public class Activity {
     //负责人及联系方式
     private String info;
 
-    //活动状态{0:已结束；1：接受报名；2：未开始}
+    //申请时间
+    private String applyTime;
+
+    //发布时间
+    private String sendTime;
+
+    //报名截止时间
+    private String overTime;
+
+    //活动状态{0:未通过；1：已通过；2：报名中；3：报名结束；4：待审核}
     private Integer status;
 
     @OneToOne(cascade = {CascadeType.REFRESH},fetch = FetchType.EAGER)
@@ -133,5 +142,29 @@ public class Activity {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getApplyTime() {
+        return applyTime;
+    }
+
+    public void setApplyTime(String applyTime) {
+        this.applyTime = applyTime;
+    }
+
+    public String getSendTime() {
+        return sendTime;
+    }
+
+    public void setSendTime(String sendTime) {
+        this.sendTime = sendTime;
+    }
+
+    public String getOverTime() {
+        return overTime;
+    }
+
+    public void setOverTime(String overTime) {
+        this.overTime = overTime;
     }
 }

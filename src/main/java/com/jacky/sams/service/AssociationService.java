@@ -3,6 +3,7 @@ package com.jacky.sams.service;
 import com.jacky.sams.dao.AssociationDetailRepository;
 import com.jacky.sams.dao.SysUserRepository;
 import com.jacky.sams.entity.AssociationDetail;
+import com.jacky.sams.entity.StudentAssociation;
 import com.jacky.sams.entity.SysUser;
 import org.omg.Messaging.SYNC_WITH_TRANSPORT;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,8 +11,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -82,5 +85,20 @@ public class AssociationService {
 
     public void save(AssociationDetail detail){
         associationDetailRepository.save(detail);
+    }
+
+    public List<AssociationDetail> findAllAssociationByStudent(HashMap<String ,Object> hashMap){
+        Specification querySpecifi = (Specification<AssociationDetail>) (root, criteriaQuery, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            Join<AssociationDetail,StudentAssociation> join=root.join("studentAssociations");
+            if (!StringUtils.isEmpty(hashMap.get("status"))){
+                predicates.add(criteriaBuilder.equal(join.get("status").as(Integer.class), hashMap.get("status")));
+            }
+            if(null != hashMap.get("studentId") && !hashMap.get("studentId").equals("")){
+                predicates.add(criteriaBuilder.equal(join.get("student").get("id"), hashMap.get("studentId")));
+            }
+            return criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()]));
+        };
+        return associationDetailRepository.findAll(querySpecifi);
     }
 }

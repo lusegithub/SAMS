@@ -30,9 +30,11 @@
             <div class="col-sm-2">
                 <select id="search_pass" class="form-control" name="pass">
                     <option value="">选择状态</option>
-                    <option value="2">待审核</option>
+                    <option value="4">待审核</option>
                     <option value="1">已通过</option>
                     <option value="0">未通过</option>
+                    <option value="2">报名中</option>
+                    <option value="3">报名结束</option>
                 </select>
             </div>
             <div class="col-sm-1 control-label">
@@ -42,6 +44,9 @@
     </div>
     <table id="mytab" class="table table-hover"></table>
     <div id="toolbar" class="btn-group pull-right" style="margin-right: 20px;">
+        <button id="btn_send" type="button" class="btn btn-default" onclick="send()">
+            <span class="glyphicon glyphicon-check" aria-hidden="true" ></span>发布
+        </button>
         <button id="btn_edit" type="button" class="btn btn-default" style="display:none;border-radius: 0">
             <span class="glyphicon glyphicon-pencil" aria-hidden="true" ></span>修改
         </button>
@@ -105,6 +110,29 @@
     </div>
     <!-- 模态框（Modal） -->
 
+    <div class="modal fade" id="send" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="sendLabel">发布活动</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="mySend" class="form-group" method="post" th:action="@{/association/activity/send}">
+                        <input type="hidden" id="activityId" name="id" value="">
+                        <div class="form-group">
+                            <label for="overTime">报名结束时间<input id="overTime" name="overTime" class="form-control" type="text"></label>
+                        </div>
+                        <div class="text-right">
+                            <button class="btn btn-primary" type="submit">确认发布</button>
+                            <button class="btn btn-danger" data-dismiss="modal">取消</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
 </body>
 </html>
@@ -126,7 +154,23 @@
             language: 'zh-CN'
         });
 
+        $('#overTime').datetimepicker({
+            format: 'yyyy-mm-dd hh:ii',
+            language: 'zh-CN',
+            autoclose: true
+        });
+
         $('#myAdd').submit(function() {
+            var options = {
+                success:  showResponse
+            };
+            $(this).ajaxSubmit(options);
+            return false;
+            //非常重要，如果是false，则表明是不跳转
+            //在本页上处理，也就是ajax，如果是非false，则传统的form跳转。
+        });
+
+        $('#mySend').submit(function() {
             var options = {
                 success:  showResponse
             };
@@ -216,14 +260,21 @@
                 title:'简介',
                 field:'description'
             },{
-                title:'举办地点',
+                title:'活动地点',
                 field:'location'
             },{
-                title:'开始时间',
-                field:'startTime'
+                title:'申请时间',
+                field:'applyTime'
             },{
-                title:'结束时间',
-                field:'endTime'
+                title:'发布时间',
+                field:'sendTime',
+                formatter:function(value,row,index){
+                    if (value===null||value===""){
+                        return "无"
+                    }else {
+                        return value;
+                    }
+                }
             },{
                 title:'报名人数',
                 field:'studentActivities',
@@ -235,11 +286,15 @@
                 field:'status',
                 formatter:function(value,row,index){
                     if(value==0){
-                        return '<i class="fa fa-lock" style="color:red">报名结束</i>'
+                        return '<i class="fa fa-lock" style="color:red">未通过</i>'
                     }else if(value==1){
-                        return '<i class="fa fa-unlock" style="color:green">接受报名</i>'
-                    }else{
-                        return '<i class="fa fa-unlock" style="color:gray">未开始</i>'
+                        return '<i class="fa fa-unlock" style="color:green">已通过</i>'
+                    }else if(value==2){
+                        return '<i class="fa fa-unlock" style="color:orange">报名中</i>'
+                    }else if (value==3){
+                        return '<i class="fa fa-lock" style="color:red">报名结束</i>'
+                    }else {
+                        return '<i class="fa fa-lock" style="color:gray">待审核</i>'
                     }
                 }
             }
@@ -253,14 +308,14 @@
 
     //请求服务数据时所传参数
     function queryParams(params){
-        var pass = $("#search_pass").find("option:selected").val();
+        var status = $("#search_pass").find("option:selected").val();
         return{
             //每页多少条数据
             pageSize: params.limit,
             //请求第几页
             pageIndex: params.pageNumber,
             name: $('#search_name').val(),
-            pass: pass
+            status: status
         }
     }
     //查询按钮事件
@@ -318,6 +373,26 @@
         }
         ids = ids.substring(0, ids.length - 1);
         window.location.href="/admin/association/get/"+ids;
+    }
+
+    function send() {
+        //获取所有被选中的记录
+        var rows = $("#mytab").bootstrapTable('getSelections');
+        if (rows.length=== 0) {
+            alert("请先选择要发布的活动!");
+            return;
+        }
+        if (rows.length>1) {
+            alert("只能选择一个活动发布");
+            return;
+        }
+        var ids = '';
+        for (var i = 0; i < rows.length; i++) {
+            ids += rows[i]['id'] + ",";
+        }
+        ids = ids.substring(0, ids.length - 1);
+        $("#activityId").val(ids);
+        $('#send').modal('show')
     }
 
 </script>

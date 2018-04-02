@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -124,5 +125,17 @@ public class StudentController {
         detail.getStudentAssociations().add(studentAssociation);
         studentService.addStudent(student);
         associationService.addAssociation(detail);
+    }
+
+    @RequestMapping(value = "/activity/listPage")
+    public String activityList(Model model){
+        SysUser user= (SysUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Student student=studentService.findStudentByUserId(user.getId());
+        HashMap<String ,Object> paramMap=new HashMap<>();
+        paramMap.put("studentId",student.getId());
+        paramMap.put("status",1);
+        List<AssociationDetail> details=associationService.findAllAssociationByStudent(paramMap);
+        model.addAttribute("details",details);
+        return "student/activity/list";
     }
 }

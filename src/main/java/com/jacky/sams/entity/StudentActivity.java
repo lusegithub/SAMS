@@ -20,6 +20,7 @@ public class StudentActivity implements Serializable {
     @JsonIgnore
     private Activity activity;
 
+    //报名时间
     @Column(length = 50)
     private String applyTime;
 

@@ -20,11 +20,14 @@ public class StudentAssociation implements Serializable {
     @JsonIgnore
     private Student student;
 
+    //状态{1:已加入；2：待审核}
     private int status;
 
+    //申请时间
     @Column(length = 50)
     private String applyTime;
 
+    //加入时间
     @Column(length = 50)
     private String enterTime;
 

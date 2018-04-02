@@ -1,10 +1,7 @@
 package com.jacky.sams.controller;
 
 import com.jacky.sams.entity.*;
-import com.jacky.sams.service.AssociationService;
-import com.jacky.sams.service.StudentService;
-import com.jacky.sams.service.SysRoleService;
-import com.jacky.sams.service.SysUserService;
+import com.jacky.sams.service.*;
 import com.jacky.sams.util.ImageUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -39,6 +36,9 @@ public class AdminController {
 
     @Resource
     private StudentService studentService;
+
+    @Resource
+    private ActivityService activityService;
 
     @RequestMapping(value = "/index")
     public String index(){
@@ -164,6 +164,28 @@ public class AdminController {
 
     @RequestMapping("/activity/listPage")
     public String getActivityPage(Model model){
+        List<AssociationDetail> details=associationService.getAssociation();
+        model.addAttribute("assos",details);
         return "/admin/activity/list";
+    }
+
+    @PostMapping("/activity/list")
+    @ResponseBody
+    public HashMap<String, Object> getActivity(String associationId,String name,Integer status,int pageIndex,int pageSize){
+        HashMap<String ,Object> hashMap=new HashMap<>();
+        HashMap<String ,Object> paramMap=new HashMap<>();
+        paramMap.put("name",name);
+        paramMap.put("association_id",associationId);
+        paramMap.put("status",status);
+        Page<Activity> activities=activityService.findAllActivityByPage(paramMap,pageIndex,pageSize);
+        hashMap.put("data",activities.getContent());
+        hashMap.put("total",activities.getTotalElements());
+        return hashMap;
+    }
+
+    @PostMapping("/activity/changeStatus")
+    @ResponseBody
+    public void changeStatus(String ids,Integer statusCode){
+        activityService.changeStatus(ids,statusCode,4);
     }
 }

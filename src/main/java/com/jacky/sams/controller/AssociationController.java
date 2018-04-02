@@ -20,6 +20,8 @@ import sun.security.pkcs11.P11Util;
 
 import javax.annotation.Resource;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -100,10 +102,14 @@ public class AssociationController {
 
     @PostMapping("/activity/list")
     @ResponseBody
-    public HashMap<String, Object> getActivity(String name, int pageIndex, int pageSize){
+    public HashMap<String, Object> getActivity(String name,Integer status,int pageIndex, int pageSize){
+        SysUser user= (SysUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        AssociationDetail detail=user.getAssociationDetail();
         HashMap<String ,Object> hashMap=new HashMap<>();
         HashMap<String ,Object> paramMap=new HashMap<>();
+        paramMap.put("association_id",detail.getId());
         paramMap.put("name",name);
+        paramMap.put("status",status);
         Page<Activity> detailPage=activityService.findAllActivityByPage(paramMap,pageIndex,pageSize);
         hashMap.put("data",detailPage.getContent());
         hashMap.put("total",detailPage.getTotalElements());
@@ -117,10 +123,13 @@ public class AssociationController {
         AssociationDetail detail=user.getAssociationDetail();
         Result result=new Result();
         activity.setDetail(detail);
-        activity.setStatus(2);
+        activity.setStatus(4);
+        Date date=new Date();
+        SimpleDateFormat formatter=new SimpleDateFormat("yyyy-MM-dd");
+        activity.setApplyTime(formatter.format(date));
         activityService.addActivity(activity);
         result.setResultCode(1);
-        result.setResultInfo("添加成功");
+        result.setResultInfo("添加成功,等待审核");
         return result;
     }
 
@@ -128,6 +137,22 @@ public class AssociationController {
     @ResponseBody
     public void deleteActivity(String ids){
         activityService.deleteById(ids);
+    }
+
+    @PostMapping("/activity/send")
+    @ResponseBody
+    public Result sendActivity(String overTime,String id){
+        Result result=new Result();
+        Date date=new Date();
+        SimpleDateFormat formatter=new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        Activity activity=activityService.getActivity(id);
+        activity.setOverTime(overTime);
+        activity.setSendTime(formatter.format(date));
+        activity.setStatus(2);
+        activityService.addActivity(activity);
+        result.setResultCode(1);
+        result.setResultInfo("发布成功");
+        return result;
     }
 
     @RequestMapping("/associator/listPage")
