@@ -62,6 +62,23 @@ public class ActivityService {
     }
 
     public Activity getActivity(String id){
-        return activityRepository.getOne(id);
+        return activityRepository.findById(id).orElse(null);
+    }
+
+    public List<Activity> getAllActivity(HashMap<String ,Object> hashMap){
+        Specification querySpecifi = (Specification<Activity>) (root, criteriaQuery, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            if(null != hashMap.get("name") && !hashMap.get("name").equals("")){
+                predicates.add(criteriaBuilder.like(root.get("name"), "%"+(String) hashMap.get("name")+"%"));
+            }
+            if(!StringUtils.isEmpty(hashMap.get("status"))){
+                predicates.add(criteriaBuilder.equal(root.get("status").as(Integer.class), hashMap.get("status")));
+            }
+            if (!StringUtils.isEmpty(hashMap.get("association_ids"))){
+                predicates.add(criteriaBuilder.in(root.join("detail").get("id")).value(hashMap.get("association_ids")));
+            }
+            return criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()]));
+        };
+        return activityRepository.findAll(querySpecifi);
     }
 }

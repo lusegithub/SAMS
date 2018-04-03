@@ -1,10 +1,7 @@
 package com.jacky.sams.controller;
 
 import com.jacky.sams.entity.*;
-import com.jacky.sams.service.AssociationService;
-import com.jacky.sams.service.StudentService;
-import com.jacky.sams.service.SysRoleService;
-import com.jacky.sams.service.SysUserService;
+import com.jacky.sams.service.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
@@ -16,10 +13,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Controller
 @RequestMapping("/student")
@@ -36,6 +30,9 @@ public class StudentController {
 
     @Resource
     private AssociationService associationService;
+
+    @Resource
+    private ActivityService activityService;
 
     @PostMapping("/signup")
     @ResponseBody
@@ -136,6 +133,45 @@ public class StudentController {
         paramMap.put("status",1);
         List<AssociationDetail> details=associationService.findAllAssociationByStudent(paramMap);
         model.addAttribute("details",details);
+        //加入的社团
+        List<String> list=new ArrayList<>();
+        for (AssociationDetail detail:details){
+            list.add(detail.getId());
+        }
+        //报名中的活动
+        HashMap<String ,Object> map=new HashMap<>();
+        map.put("status",2);
+        map.put("association_ids",list);
+        List<Activity> startActivities=activityService.getAllActivity(map);
+        model.addAttribute("startActivities",startActivities);
+        //已结束的活动
+        HashMap<String ,Object> mapOver=new HashMap<>();
+        mapOver.put("status",3);
+        mapOver.put("association_ids",list);
+        List<Activity> overActivities=activityService.getAllActivity(mapOver);
+        model.addAttribute("overActivities",overActivities);
         return "student/activity/list";
+    }
+
+    @PostMapping("/activity/join")
+    @ResponseBody
+    public void joinActivity(String id){
+        SysUser user= (SysUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Student student=studentService.findStudentByUserId(user.getId());
+        Activity activity=activityService.getActivity(id);
+        StudentActivity studentActivity=new StudentActivity();
+        studentActivity.setActivity(activity);
+        studentActivity.setStudent(student);
+        Date date=new Date();
+        SimpleDateFormat formatter=new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        studentActivity.setApplyTime(formatter.format(date));
+        activity.getStudentActivities().add(studentActivity);
+        studentService.addStudent(student);
+        activityService.addActivity(activity);
+    }
+
+    private Student getCurrentStudent(){
+        SysUser user= (SysUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return studentService.findStudentByUserId(user.getId());
     }
 }

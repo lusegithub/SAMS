@@ -53,7 +53,7 @@ public class Activity {
     @JoinColumn(name = "aid")
     private AssociationDetail detail;
 
-    @OneToMany(mappedBy = "activity")
+    @OneToMany(mappedBy = "activity", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<StudentActivity> studentActivities;
 
     public String getName() {
