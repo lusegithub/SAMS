@@ -162,22 +162,22 @@
             width:25,
             align:'center',
             valign:'middle'
-        },
-        {
+        },{
             title:'ID',
             field:'id',
             visible:false
         },{
                 title:'账号',
                 field:'username'
-            },
-        {
+        },{
             title:'所属社团',
             field:'associationDetail',
-            sortable:true,
             formatter:function(value,row,index){
                 return value.name;
             }
+        },{
+            title:'创建时间',
+            field:'signUpTime'
         }
     ],
         locale:'zh-CN',//中文支持,

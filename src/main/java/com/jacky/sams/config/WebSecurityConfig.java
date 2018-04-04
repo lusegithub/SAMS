@@ -26,7 +26,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
                 .authorizeRequests()
-                .antMatchers(new String[]{"/student/signup","/bootstrap-table/**","/webjars/**","/static/**","/**/favicon.ico"}).permitAll()
+                .antMatchers(new String[]{"/apply**","/student/signup","/bootstrap-table/**","/webjars/**","/static/**","/**/favicon.ico"}).permitAll()
                 .anyRequest().authenticated()
                 .and().formLogin().loginPage("/login").successForwardUrl("/dispatch").permitAll()
                 .and().rememberMe().tokenValiditySeconds(12009600).key("mykey")

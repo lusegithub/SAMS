@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+    <title>学生社团管理系统</title>
+    <link rel="stylesheet" href="/webjars/bootstrap/3.3.5/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="/static/css/common/bootstrapValidator.css"/>
+    <script src="/webjars/jquery/3.1.1/jquery.min.js"></script>
+    <script src="/webjars/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script src="/static/js/common/jQuery.Form.js"></script>
+    <script src="/static/js/common/bootstrapValidator.js"></script>
+</head>
+<body>
+<nav class="navbar navbar-default navbar-static-top" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" th:href="@{/login}">学生社团管理系统</a>
+        </div>
+    </div>
+</nav>
+<div class="container">
+    <fieldset class="text-center">
+        <legend>社团成立申请</legend>
+    </fieldset>
+    <form id="myAdd" class="form-horizontal" role="form" style="" enctype="multipart/form-data" th:action="@{/apply}" th:method="post">
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <div class="form-group">
+                    <label for="name" class="col-sm-2 control-label">社团全称：</label>
+                    <div class="col-sm-4">
+                        <input type="text" class="form-control" id="name" name="name">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="logo" class="col-sm-2 control-label">logo：</label>
+                    <div class="col-sm-4">
+                        <input type="file" name="logoPic" id="logo">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="category" class="col-sm-2 control-label">类别：</label>
+                    <select class="col-lg-1 form-control" id="category" style="margin-left: 15px;width: 200px" name="category">
+                        <option value="">选择类别</option>
+                        <option value="人文学术">人文学术</option>
+                        <option value="文娱体育">文娱体育</option>
+                        <option value="社会服务">社会服务</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="purpose" class="col-sm-2 control-label">社团宗旨：</label>
+                    <textarea name="purpose" id="purpose" class="col-lg-5 input-sm" rows="4" style="margin-left: 15px"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="activity" class="col-sm-2 control-label">主要活动：</label>
+                    <textarea name="activity" id="activity" class="col-lg-5 input-sm" rows="4" style="margin-left: 15px"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="welfare" class="col-sm-2 control-label">会员福利：</label>
+                    <textarea name="welfare" id="welfare" class="col-lg-5 input-sm" rows="4" style="margin-left: 15px"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">主要发起人：</label>
+                </div>
+
+                <div id="member">
+                    <div id="member0">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">发起人1：</label>
+                        </div>
+                        <div class="form-group">
+                            <label for="memberName" class="col-sm-2 control-label">姓名：</label>
+                            <div class="col-sm-4">
+                                <input type="text" class="form-control" id="memberName" name="member[0].name">
+                            </div>
+                            <label class="col-sm-2 control-label">性别：</label>
+                            <div class="col-sm-4">
+                                <div class="radio">
+                                    <label style="padding-right: 10px"><input type="radio" name="member[0].sex" id="optionsRadios1" value="男" checked>男</label>
+                                    <label><input type="radio" name="member[0].sex" id="optionsRadios2" value="女">女</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="duty" class="col-sm-2 control-label">职务：</label>
+                            <div class="col-sm-4">
+                                <input type="text" class="form-control" id="duty" name="member[0].duty">
+                            </div>
+                            <label for="institution" class="col-sm-2 control-label">学院：</label>
+                            <div class="col-sm-4">
+                                <input type="text" class="form-control" id="institution" name="member[0].institution">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="grade" class="col-sm-2 control-label">年级：</label>
+                            <div class="col-sm-4">
+                                <input type="text" class="form-control" id="grade" name="member[0].grade">
+                            </div>
+                            <label for="phone" class="col-sm-2 control-label">联系方式：</label>
+                            <div class="col-sm-4">
+                                <input type="text" class="form-control" id="phone" name="member[0].phone">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="qq" class="col-sm-2 control-label">qq：</label>
+                            <div class="col-sm-4">
+                                <input type="text" class="form-control" id="qq" name="member[0].qq">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-4">
+                        <button type="button" class="btn btn-primary" onclick="addMember()">增加发起人</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="row" style="padding-top: 30px">
+            <div class="form-group">
+                <div class="col-md-8 col-md-offset-4">
+                    <button type="submit" class="btn btn-primary" style="width: 100px">提交</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+</div>
+</body>
+</html>
+<script>
+
+    String.prototype.replaceAll = function(s1,s2){
+        return this.replace(new RegExp(s1,"gm"),s2);
+    };
+
+    var memberNumer=1;
+
+    var tplHtml='<div id="member@memberNumber">\n' +
+        '                                <div class="form-group">\n' +
+        '                                    <label class="col-sm-2 control-label">@desc：</label>\n' +
+        '                                </div>\n' +
+        '                                <div class="form-group">\n' +
+        '                                    <label for="memberName" class="col-sm-2 control-label">姓名：</label>\n' +
+        '                                    <div class="col-sm-4">\n' +
+        '                                        <input type="text" class="form-control" id="memberName" name="member[@memberNumber].name">\n' +
+        '                                    </div>\n' +
+        '                                    <label class="col-sm-2 control-label">性别：</label>\n' +
+        '                                    <div class="col-sm-4">\n' +
+        '                                        <div class="radio">\n' +
+        '                                            <label style="padding-right: 10px"><input type="radio" name="member[@memberNumber].sex" id="optionsRadios1" value="男" checked>男</label>\n' +
+        '                                            <label><input type="radio" name="member[@memberNumber].sex" id="optionsRadios2" value="女">女</label>\n' +
+        '                                        </div>\n' +
+        '                                    </div>\n' +
+        '                                </div>\n' +
+        '                                <div class="form-group">\n' +
+        '                                    <label for="duty" class="col-sm-2 control-label">职务：</label>\n' +
+        '                                    <div class="col-sm-4">\n' +
+        '                                        <input type="text" class="form-control" id="duty" name="member[@memberNumber].duty">\n' +
+        '                                    </div>\n' +
+        '                                    <label for="institution" class="col-sm-2 control-label">学院：</label>\n' +
+        '                                    <div class="col-sm-4">\n' +
+        '                                        <input type="text" class="form-control" id="institution" name="member[@memberNumber].institution">\n' +
+        '                                    </div>\n' +
+        '                                </div>\n' +
+        '                                <div class="form-group">\n' +
+        '                                    <label for="grade" class="col-sm-2 control-label">年级：</label>\n' +
+        '                                    <div class="col-sm-4">\n' +
+        '                                        <input type="text" class="form-control" id="grade" name="member[@memberNumber].grade">\n' +
+        '                                    </div>\n' +
+        '                                    <label for="phone" class="col-sm-2 control-label">联系方式：</label>\n' +
+        '                                    <div class="col-sm-4">\n' +
+        '                                        <input type="text" class="form-control" id="phone" name="member[@memberNumber].phone">\n' +
+        '                                    </div>\n' +
+        '                                </div>\n' +
+        '                                <div class="form-group">\n' +
+        '                                    <label for="qq" class="col-sm-2 control-label">qq：</label>\n' +
+        '                                    <div class="col-sm-4">\n' +
+        '                                        <input type="text" class="form-control" id="qq" name="member[@memberNumber].qq">\n' +
+        '                                    </div>\n' +
+        '                                </div>\n' +
+        '                            </div>';
+
+
+    function addMember() {
+        var tpl=tplHtml;
+        tpl = tpl.replaceAll("@memberNumber",memberNumer);
+        var num=memberNumer+1;
+        tpl = tpl.replaceAll("@desc","发起人"+num);
+        $("#member").append(tpl);
+        memberNumer+=1;
+    }
+
+    $(document).ready(function() {
+        $('#myAdd').bootstrapValidator({
+            live: 'live',
+            feedbackIcons: {
+                valid: 'glyphicon glyphicon-ok',
+                invalid: 'glyphicon glyphicon-remove',
+                validating: 'glyphicon glyphicon-refresh'
+            },
+            submitButtons: 'button[type="submit"]',
+            submitHandler: function(validator, form, submitButton) {
+                // 实用ajax提交表单
+                if (validator.isValid()) {
+                    var options = {
+                        success:  showResponse
+                    };
+                    $("#myAdd").ajaxSubmit(options);
+                }
+            },
+            fields: {
+                name: {
+                    validators: {
+                        notEmpty: {
+                            message: "社团全称不能为空"
+                        }
+                    }
+                },
+//                logoPic: {
+//                    validators: {
+//                        notEmpty: {
+//                            message: "上传一张图片"
+//                        }
+//                    }
+//                },
+                category: {
+                    validators: {
+                        notEmpty: {
+                            message: "请选择一个类别"
+                        }
+                    }
+                }
+            }
+        });
+        $('#myAdd').submit(function() {
+            return false;
+//            非常重要，如果是false，则表明是不跳转
+//            在本页上处理，也就是ajax，如果是非false，则传统的form跳转。
+        });
+    });
+
+    function showResponse(data) {
+        if (data.resultCode === 0){
+            alert(data.resultInfo);
+            return
+        }
+        alert(data.resultInfo);
+        window.location.href="/login"
+    }
+</script>

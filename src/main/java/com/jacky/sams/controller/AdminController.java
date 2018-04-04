@@ -5,6 +5,7 @@ import com.jacky.sams.service.*;
 import com.jacky.sams.util.ImageUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -109,6 +110,7 @@ public class AdminController {
     @PostMapping("/association/add")
     @ResponseBody
     public Result addAssociation(AssociationDetail associationDetail, @RequestParam(value = "logoPic", required = false) MultipartFile multipartFile) {
+        SysUser user= (SysUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Result result=new Result();
         result.setResultCode(0);
         if (multipartFile!=null && !multipartFile.isEmpty()) {
@@ -118,7 +120,7 @@ public class AdminController {
             }
             String file_name;
             try {
-                file_name = ImageUtil.saveImg(multipartFile, location);
+                file_name = ImageUtil.saveImg(user,multipartFile, location);
             } catch (IOException e) {
                 result.setResultInfo("图片上传失败");
                 return result;
@@ -187,5 +189,12 @@ public class AdminController {
     @ResponseBody
     public void changeStatus(String ids,Integer statusCode){
         activityService.changeStatus(ids,statusCode,4);
+    }
+
+    @GetMapping("/activity/get/{id}")
+    public String getActivity(Model model,@PathVariable("id") String id){
+        Activity activity=activityService.getActivity(id);
+        model.addAttribute("activity",activity);
+        return "/admin/activity/detail";
     }
 }

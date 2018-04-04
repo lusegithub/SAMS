@@ -9,14 +9,6 @@
     <script src="/webjars/jquery/3.1.1/jquery.min.js"></script>
     <script src="/webjars/bootstrap/3.3.5/js/bootstrap.min.js"></script>
     <script src="/static/js/admin/header.js"></script>
-    <style>
-        img{
-            width:120px;
-            height:120px;
-            overflow:hidden;
-            float: right;
-        }
-    </style>
 </head>
 <body>
 <div id="header"></div>
@@ -25,76 +17,65 @@
         <h2>基本信息</h2>
     </div>
     <div class="col-md-8">
-        <input type="hidden" id="id" th:value="${detail.id}">
+        <input type="hidden" id="id" th:value="${activity.id}">
 
-        <div class="row">
-            <div class="col-md-9">
-                <div class="well" style="font-size: 20px" th:text="${detail.name}"></div>
-            </div>
-            <div class="col-md-3">
-                <img class="thumbnail" th:src="${detail.logo}" id="logo">
-            </div>
+        <div class="well" th:text="${activity.name}" style="font-size: 20px">
         </div>
 
         <div class="panel panel-default">
             <div class="panel-heading">
-                <h3 class="panel-title">类别</h3>
+                <h3 class="panel-title">申请时间</h3>
             </div>
-            <div class="panel-body" th:text="${detail.category}">
-            </div>
-        </div>
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">社团宗旨</h3>
-            </div>
-            <div class="panel-body" th:text="${detail.purpose}">
-            </div>
-        </div>
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">主要活动</h3>
-            </div>
-            <div class="panel-body" th:text="${detail.activity}">
+            <div class="panel-body" th:text="${activity.applyTime}">
             </div>
         </div>
 
         <div class="panel panel-default">
             <div class="panel-heading">
-                <h3 class="panel-title">会员福利</h3>
+                <h3 class="panel-title">所属社团</h3>
             </div>
-            <div class="panel-body" th:text="${detail.welfare}">
+            <div class="panel-body" th:text="${activity.detail.name}">
             </div>
         </div>
 
         <div class="panel panel-default">
             <div class="panel-heading">
-                <h3 class="panel-title">主要发起人</h3>
+                <h3 class="panel-title">简介</h3>
             </div>
-            <table class="table">
-                <thead>
-                <tr>
-                    <th>姓名</th>
-                    <th>性别</th>
-                    <th>职务</th>
-                    <th>学院</th>
-                    <th>年级</th>
-                    <th>联系电话</th>
-                    <th>QQ</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="list:${detail.member}">
-                    <td th:text="${list.name}"></td>
-                    <td th:text="${list.sex}"></td>
-                    <td th:text="${list.duty}"></td>
-                    <td th:text="${list.institution}"></td>
-                    <td th:text="${list.grade}"></td>
-                    <td th:text="${list.phone}"></td>
-                    <td th:text="${list.qq}"></td>
-                </tr>
-                </tbody>
-            </table>
+            <div class="panel-body" th:text="${activity.description}">
+            </div>
         </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">内容</h3>
+            </div>
+            <div class="panel-body" th:text="${activity.content}">
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">时间</h3>
+            </div>
+            <div class="panel-body" th:text="${activity.startTime+' - '+activity.endTime}">
+            </div>
+        </div>
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">地点</h3>
+            </div>
+            <div class="panel-body" th:text="${activity.location}">
+            </div>
+        </div>
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">负责人及联系方式</h3>
+            </div>
+            <div class="panel-body" th:text="${activity.info}">
+            </div>
+        </div>
+
     </div>
 
     <div class="col-md-4">
@@ -104,13 +85,13 @@
             </div>
             <div class="panel-body">
                 <div class="row" style="text-align: center">
-                    <div class="col-sm-2" th:if="${detail.pass==2}">
+                    <div class="col-sm-2" th:if="${activity.status==4}">
                         <button type="button" class="btn btn-success" onclick="pass(1)">通过</button>
                     </div>
-                    <div class="col-sm-2" th:if="${detail.pass==2}">
+                    <div class="col-sm-2" th:if="${activity.status==4}">
                         <button type="button" class="btn btn-danger"  onclick="pass(0)">不通过</button>
                     </div>
-                    <div class="col-sm-2" th:if="${detail.pass!=2}">
+                    <div class="col-sm-2" th:if="${activity.status!=4}">
                         无
                     </div>
                 </div>
@@ -128,14 +109,15 @@
     function pass(code) {
         var id=$("#id").val();
         $.ajax({
-            url: "/admin/association/pass",
+            url: "/admin/activity/changeStatus",
             type: "post",
             data: {
-                id: id,
-                passCode: code
+                ids: id,
+                statusCode: code
             },
             success: function (data) {
-                window.location.href="/admin/association/listPage"
+                alert("操作成功");
+                window.location.href="/admin/activity/listPage"
             },
             error: function () {
                 alert("网络错误")

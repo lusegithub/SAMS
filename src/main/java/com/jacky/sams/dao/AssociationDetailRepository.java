@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 public interface AssociationDetailRepository extends JpaRepository<AssociationDetail, String>,JpaSpecificationExecutor<AssociationDetail> {
 
-
+    AssociationDetail findByName(String name);
 }

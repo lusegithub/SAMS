@@ -2,6 +2,7 @@ package com.jacky.sams.util;
 
 import com.jacky.sams.entity.SysUser;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
@@ -19,7 +20,7 @@ public class ImageUtil {
      * @return 返回文件名
      * @throws IOException
      */
-    public static String saveImg(MultipartFile multipartFile, String path) throws IOException {
+    public static String saveImg(SysUser user,MultipartFile multipartFile, String path) throws IOException {
 //        SysUser user= (SysUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 //        path+=user.getUsername();
 //        File file = new File(path);
@@ -37,15 +38,22 @@ public class ImageUtil {
 //        bos.flush();
 //        bos.close();
 
-        SysUser user= (SysUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        path+=user.getUsername();
+        String relativePath="";
+        if (!StringUtils.isEmpty(user)) {
+            path += user.getUsername();
+            relativePath+=File.separator +user.getUsername();
+        }else {
+            path += "apply";
+            relativePath+=File.separator +"apply";
+        }
         File file = new File(path);
         if (!file.exists()) {
             file.mkdirs();
         }
         String fileName = UUID.randomUUID().toString().replaceAll("-", "") + ".png";
+        relativePath+=File.separator + fileName;
         resizeImage(multipartFile.getInputStream(),new File(path + File.separator + fileName),200,180);
-        return File.separator +user.getUsername()+File.separator+ fileName;
+        return relativePath;
     }
 
     public static void resizeImage(InputStream in,File output,

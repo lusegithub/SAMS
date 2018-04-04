@@ -71,6 +71,8 @@ public class AssociationController {
     @PostMapping("/detail/edit")
     @ResponseBody
     public Result edit(AssociationDetail associationDetail, @RequestParam(value = "logoPic", required = false) MultipartFile multipartFile){
+        SysUser user= (SysUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        AssociationDetail detail=associationService.getAssociation(associationDetail.getId());
         Result result=new Result();
         result.setResultCode(0);
         if (multipartFile!=null && !multipartFile.isEmpty()) {
@@ -80,15 +82,15 @@ public class AssociationController {
             }
             String file_name;
             try {
-                file_name = ImageUtil.saveImg(multipartFile, location);
+                file_name = ImageUtil.saveImg(user,multipartFile, location);
             } catch (IOException e) {
                 result.setResultInfo("图片上传失败");
                 return result;
             }
             associationDetail.setLogo(file_name);
         }
+        associationDetail.setStudentAssociations(detail.getStudentAssociations());
         associationService.save(associationDetail);
-        SysUser user= (SysUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         user.setAssociationDetail(associationDetail);
         result.setResultCode(1);
         result.setResultInfo("修改成功");

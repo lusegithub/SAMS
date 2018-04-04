@@ -52,10 +52,10 @@
     <table id="mytab" class="table table-hover"></table>
     <div id="toolbar" class="btn-group pull-right" style="margin-right: 20px;">
         <button id="btn_change" type="button" class="btn btn-default" style="border-radius: 0" onclick="pass(0)">
-            <span class="glyphicon glyphicon-bookmark" aria-hidden="true" ></span>批量不通过
+            <span class="glyphicon glyphicon-remove" aria-hidden="true" ></span>批量不通过
         </button>
         <button id="btn_edit" type="button" class="btn btn-default" style="border-radius: 0" onclick="pass(1)">
-            <span class="glyphicon glyphicon-check" aria-hidden="true" ></span>批量通过
+            <span class="glyphicon glyphicon-ok" aria-hidden="true" ></span>批量通过
         </button>
         <button id="btn_retrieve" type="button" class="btn btn-default" onclick="goDetail()">
             <span class="glyphicon glyphicon-check" aria-hidden="true"></span>查看
@@ -286,7 +286,7 @@
             ids += rows[i]['id'] + ",";
         }
         ids = ids.substring(0, ids.length - 1);
-        window.location.href="/admin/association/get/"+ids;
+        window.location.href="/admin/activity/get/"+ids;
     }
 
 </script>

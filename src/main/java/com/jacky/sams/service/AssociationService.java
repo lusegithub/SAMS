@@ -101,4 +101,8 @@ public class AssociationService {
         };
         return associationDetailRepository.findAll(querySpecifi);
     }
+
+    public AssociationDetail findByName(String name){
+        return associationDetailRepository.findByName(name);
+    }
 }
