@@ -23,6 +23,10 @@
             <div class="col-sm-2">
                 <input type="text" class="form-control" name="Name" id="search_name"/>
             </div>
+            <label class="col-sm-1 control-label" style="text-align: right; margin-top:5px">学号：</label>
+            <div class="col-sm-2">
+                <input type="text" class="form-control" name="stuNo" id="search_stuNo"/>
+            </div>
             <div class="col-sm-1 control-label">
                 <button class="btn btn-primary" id="search_btn">查询</button>
             </div>
@@ -47,29 +51,12 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title" id="myModalLabel">添加社团管理员</h4>
+                    <h4 class="modal-title" id="myModalLabel">学生信息</h4>
                 </div>
                 <div class="modal-body">
-                    <form id="myAdd" class="form-group" method="post" th:action="@{/admin/asso_manage/add}">
-                        <div class="form-group">
-                            <label for="">账号</label>
-                            <input name="username" class="form-control" type="text" placeholder="">
-                        </div>
-                        <div class="form-group">
-                            <label for="">密码</label>
-                            <input name="password" class="form-control" type="password" placeholder="至少6位字母或数字">
-                        </div>
-                        <div class="form-group">
-                            <label for="">选择社团</label>
-                            <select class="form-control" name="asso_id">
-                                <option th:each="list:${assos}" th:value="${list.id}" th:text="${list.name}"></option>
-                            </select>
-                        </div>
-                        <div class="text-right">
-                            <button id="save" class="btn btn-primary" type="submit">提交</button>
-                            <button class="btn btn-danger" data-dismiss="modal">取消</button>
-                        </div>
-                    </form>
+                    <ul class="list-group" id="base">
+
+                    </ul>
                 </div>
             </div>
         </div>
@@ -161,6 +148,12 @@
                 field:'id',
                 visible:false
             },{
+                title:'账号',
+                field:'user',
+                formatter:function(value,row,index){
+                    return value.username
+                }
+            },{
                 title:'姓名',
                 field:'name'
             },{
@@ -175,9 +168,6 @@
             },{
                 title:'专业',
                 field:'profession'
-            },{
-                title:'年级',
-                field:'grade'
             },{
                 title:'联系电话',
                 field:'phone'
@@ -203,7 +193,8 @@
             pageSize: params.limit,
             //请求第几页
             pageIndex: params.pageNumber,
-            name: $('#search_name').val()
+            name: $('#search_name').val(),
+            stuNo: $("#search_stuNo").val()
         }
     }
     //查询按钮事件
@@ -229,14 +220,14 @@
         }
         ids = ids.substring(0, ids.length - 1);
         $.ajax({
-            url: "/admin/association/delete",
+            url: "/admin/student/delete",
             type: "post",
             data: {
                 ids: ids
             },
             success: function () {
                 alert("删除成功");
-                $('#mytab').bootstrapTable('refresh', {url: '/admin/association/list',pageNumber:1,pageSize:10})
+                $('#mytab').bootstrapTable('refresh', {url: '/admin/student/list',pageNumber:1,pageSize:10})
             },
             error: function () {
                 alert("删除失败")
@@ -260,6 +251,29 @@
             ids += rows[i]['id'] + ",";
         }
         ids = ids.substring(0, ids.length - 1);
-        window.location.href="/admin/association/get/"+ids;
+//        window.location.href="/admin/student/get/"+ids;
+        $.ajax({
+            url:"/admin/student/get",
+            data:{
+                id: ids
+            },
+            type:"POST",
+            success:function(data) {
+                $('#base').html("");
+                var tpl='<li class="list-group-item">姓名：  '+data.name+'</li>';
+                tpl+='<li class="list-group-item">性别：  '+data.sex+'</li>';
+                tpl+='<li class="list-group-item">生日：  '+data.birthday+'</li>';
+                tpl+='<li class="list-group-item">学号：  '+data.stuNo+'</li>';
+                tpl+='<li class="list-group-item">学院：  '+data.institution+'</li>';
+                tpl+='<li class="list-group-item">专业：  '+data.profession+'</li>';
+                tpl+='<li class="list-group-item">年级：  '+data.grade+'</li>';
+                tpl+='<li class="list-group-item">班级：  '+data.className+'</li>';
+                tpl+='<li class="list-group-item">宿舍地址：  '+data.address+'</li>';
+                tpl+='<li class="list-group-item">联系电话：  '+data.phone+'</li>';
+                tpl+='<li class="list-group-item">个人描述：  '+data.description+'</li>';
+                $('#base').append(tpl);
+                $('#myModal').modal('show')
+            }
+        });
     }
 </script>

@@ -5,10 +5,12 @@
     <title>学生社团管理系统</title>
     <link rel="stylesheet" href="/webjars/bootstrap/3.3.5/css/bootstrap.min.css"/>
     <link href="/static/css/common/bootstrap-table.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="/static/css/common/bootstrapValidator.css"/>
     <script src="/webjars/jquery/3.1.1/jquery.min.js"></script>
     <script src="/webjars/bootstrap/3.3.5/js/bootstrap.min.js"></script>
     <script src="/static/js/common/bootstrap-table.min.js"></script>
     <script src="/static/js/common/bootstrap-table-zh-CN.min.js"></script>
+    <script src="/static/js/common/bootstrapValidator.js"></script>
     <script src="/static/js/common/jQuery.Form.js"></script>
     <script src="/static/js/admin/header.js"></script>
 </head>
@@ -62,11 +64,15 @@
                     <form id="myAdd" class="form-group" method="post" th:action="@{/admin/asso_manage/add}">
                         <div class="form-group">
                             <label for="">账号</label>
-                            <input name="username" class="form-control" type="text" placeholder="">
+                            <input id="username" name="username" class="form-control" type="text" placeholder="">
                         </div>
                         <div class="form-group">
                             <label for="">密码</label>
-                            <input name="password" class="form-control" type="password" placeholder="至少6位字母或数字">
+                            <input id="password" name="password" class="form-control" type="password" placeholder="至少6位字母或数字">
+                        </div>
+                        <div class="form-group">
+                            <label>确认密码</label>
+                            <input id="npassword" name="npassword" class="form-control" type="password" placeholder="至少6位字母或数字">
                         </div>
                         <div class="form-group">
                             <label for="">选择社团</label>
@@ -89,18 +95,70 @@
 <script>
 
     $(document).ready(function() {
+        $('#myAdd').bootstrapValidator({
+            live: 'live',
+            feedbackIcons: {
+                valid: 'glyphicon glyphicon-ok',
+                invalid: 'glyphicon glyphicon-remove',
+                validating: 'glyphicon glyphicon-refresh'
+            },
+            submitButtons: 'button[type="submit"]',
+            submitHandler: function(validator, form, submitButton) {
+                // 实用ajax提交表单
+                if (validator.isValid()) {
+                    var options = {
+                        success:  showResponse
+                    };
+                    $("#myAdd").ajaxSubmit(options);
+                }
+            },
+            fields: {
+                username: {
+                    validators: {
+                        notEmpty: {
+                            message: "账号不能为空"
+                        }
+                    }
+                },
+                password: {
+                    validators: {
+                        notEmpty: {
+                            message: "密码不能为空"
+                        },
+                        stringLength: {
+                            min: 6,
+                            max: 20,
+                            message: '密码长度在6到20之间'
+                        }
+                    }
+                },
+                npassword: {
+                    message: '密码确认验证失败',
+                    validators: {
+                        notEmpty: {
+                            message: '密码不能为空'
+                        },
+                        identical: {
+                            field: 'password',
+                            message: '两次密码不相同'
+                        }
+                    }
+                }
+            }
+        });
         $('#myAdd').submit(function() {
-            var options = {
-                success:  showResponse
-            };
-            $(this).ajaxSubmit(options);
             return false;
             //非常重要，如果是false，则表明是不跳转
             //在本页上处理，也就是ajax，如果是非false，则传统的form跳转。
         });
     });
 
-    function showResponse() {
+    function showResponse(data) {
+        if (data.resultCode === 0){
+            alert(data.resultInfo);
+            return
+        }
+        alert(data.resultInfo);
         window.location.href="/admin/asso_manage/list"
     }
 

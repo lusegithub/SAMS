@@ -127,7 +127,7 @@ public class AssociationController {
         activity.setDetail(detail);
         activity.setStatus(4);
         Date date=new Date();
-        SimpleDateFormat formatter=new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat formatter=new SimpleDateFormat("yyyy-MM-dd HH:mm");
         activity.setApplyTime(formatter.format(date));
         activityService.addActivity(activity);
         result.setResultCode(1);

@@ -13,6 +13,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -74,12 +76,25 @@ public class AdminController {
 
     @PostMapping("/asso_manage/add")
     @ResponseBody
-    public void add(SysUser sysUser,String asso_id){
+    public Result add(SysUser sysUser,String asso_id){
+        Result result=new Result();
+        SysUser user=userService.getUser(sysUser.getUsername());
+        if (user!=null){
+            result.setResultCode(0);
+            result.setResultInfo("账号已存在");
+            return result;
+        }
         SysRole role=roleService.getRole("3");
         sysUser.setRole(role);
         AssociationDetail detail=associationService.getAssociation(asso_id);
         sysUser.setAssociationDetail(detail);
+        Date date=new Date();
+        SimpleDateFormat formatter=new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        sysUser.setSignUpTime(formatter.format(date));
         userService.addUser(sysUser);
+        result.setResultCode(1);
+        result.setResultInfo("添加成功");
+        return result;
     }
 
     @RequestMapping("/association/listPage")
@@ -154,14 +169,27 @@ public class AdminController {
 
     @PostMapping("/student/list")
     @ResponseBody
-    public HashMap<String, Object> getStudents(String name,int pageIndex,int pageSize){
+    public HashMap<String, Object> getStudents(String stuNo,String name,int pageIndex,int pageSize){
         HashMap<String ,Object> hashMap=new HashMap<>();
         HashMap<String ,Object> paramMap=new HashMap<>();
         paramMap.put("name",name);
+        paramMap.put("stuNo",stuNo);
         Page<Student> students=studentService.findAllStudentByPage(paramMap,pageIndex,pageSize);
         hashMap.put("data",students.getContent());
         hashMap.put("total",students.getTotalElements());
         return hashMap;
+    }
+
+    @PostMapping("/student/delete")
+    @ResponseBody
+    public void deleteStudent(String ids){
+        studentService.deleteById(ids);
+    }
+
+    @PostMapping("/student/get")
+    @ResponseBody
+    public Student getStudent(String id){
+        return studentService.findOne(id);
     }
 
     @RequestMapping("/activity/listPage")

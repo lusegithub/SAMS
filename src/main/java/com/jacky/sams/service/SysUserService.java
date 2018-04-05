@@ -27,8 +27,8 @@ public class SysUserService {
         userRepository.save(user);
     }
 
-    public SysUser getUser(){
-        return userRepository.findByUsername("test");
+    public SysUser getUser(String username){
+        return userRepository.findByUsername(username);
     }
 
     public Page<SysUser> findAllByPage(int pageIndex, int pageSize){

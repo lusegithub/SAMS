@@ -40,7 +40,7 @@ public class StudentController {
         SysRole role=roleService.getRole("2");
         user.setRole(role);
         Date date=new Date();
-        SimpleDateFormat formatter=new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat formatter=new SimpleDateFormat("yyyy-MM-dd HH:mm");
         user.setSignUpTime(formatter.format(date));
         userService.addUser(user);
         student.setUser(user);

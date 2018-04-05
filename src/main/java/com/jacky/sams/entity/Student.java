@@ -48,14 +48,14 @@ public class Student {
     //个人描述
     private String description;
 
-    @OneToOne(cascade = {CascadeType.REFRESH},fetch = FetchType.EAGER)
+    @OneToOne(cascade = {CascadeType.REFRESH,CascadeType.REMOVE},fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private SysUser user;
 
-    @OneToMany(mappedBy = "student")
+    @OneToMany(mappedBy = "student",cascade={CascadeType.REMOVE})
     private Set<StudentAssociation> studentAssociations;
 
-    @OneToMany(mappedBy = "student")
+    @OneToMany(mappedBy = "student",cascade={CascadeType.REMOVE})
     private Set<StudentActivity> studentActivities;
 
     public String getName() {

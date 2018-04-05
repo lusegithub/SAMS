@@ -46,8 +46,8 @@ public class StudentService {
             if(!StringUtils.isEmpty(hashMap.get("name"))){
                 predicates.add(criteriaBuilder.like(root.get("name"), "%"+hashMap.get("name")+"%"));
             }
-            if(null != hashMap.get("pass") && !hashMap.get("pass").equals("")){
-                predicates.add(criteriaBuilder.equal(root.get("pass").as(Integer.class), (Integer) hashMap.get("pass")));
+            if(null != hashMap.get("stuNo") && !hashMap.get("stuNo").equals("")){
+                predicates.add(criteriaBuilder.equal(root.get("stuNo"), hashMap.get("stuNo")));
             }
             return criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()]));
         };
@@ -83,5 +83,12 @@ public class StudentService {
         SimpleDateFormat formatter=new SimpleDateFormat("yyyy-MM-dd");
         paramMap.put("enterTime",formatter.format(date));
         commonDao.deleteOrUpDate(sql,paramMap);
+    }
+
+    public void deleteById(String ids){
+        String[] id=ids.split(",");
+        for (String anId : id) {
+            repository.deleteById(anId);
+        }
     }
 }

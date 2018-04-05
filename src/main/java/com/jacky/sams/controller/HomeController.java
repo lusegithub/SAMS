@@ -17,6 +17,8 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 @Controller
 public class HomeController {
@@ -36,9 +38,9 @@ public class HomeController {
         if(auth.getAuthorities().toString().equals("[ROLE_ADMIN]")) {
             return "redirect:admin/association/listPage";
         } else if (auth.getAuthorities().toString().equals("[ROLE_ASSOCIATION]")){
-            return "redirect:association/index";
+            return "redirect:association/activity/listPage";
         } else {
-            return "redirect:student/index";
+            return "redirect:student/associationList";
         }
     }
 
@@ -90,6 +92,9 @@ public class HomeController {
             }
             associationDetail.setLogo(file_name);
         }
+        Date date=new Date();
+        SimpleDateFormat formatter=new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        associationDetail.setApplyTime(formatter.format(date));
         associationDetail.setPass(2);
         associationService.addAssociation(associationDetail);
         result.setResultCode(1);

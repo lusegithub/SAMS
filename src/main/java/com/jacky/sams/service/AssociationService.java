@@ -16,10 +16,8 @@ import org.springframework.util.StringUtils;
 import javax.annotation.Resource;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Service
 public class AssociationService {
@@ -80,6 +78,11 @@ public class AssociationService {
     public void pass(String id,Integer passCode){
         AssociationDetail detail=associationDetailRepository.findById(id).get();
         detail.setPass(passCode);
+        if (passCode==1){
+            Date date=new Date();
+            SimpleDateFormat formatter=new SimpleDateFormat("yyyy-MM-dd HH:mm");
+            detail.setBuildTime(formatter.format(date));
+        }
         associationDetailRepository.save(detail);
     }
 
