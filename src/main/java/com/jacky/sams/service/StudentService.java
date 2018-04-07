@@ -85,6 +85,15 @@ public class StudentService {
         commonDao.deleteOrUpDate(sql,paramMap);
     }
 
+    public void refuse(String ids,String assoId){
+        String sql="UPDATE student_association sa SET sa.status=0 WHERE sa.student_id in (:stuId) and sa.association_id=:assoId and sa.status=2";
+        HashMap<String ,Object> paramMap=new HashMap<>();
+        paramMap.put("assoId",assoId);
+        String[] id=ids.split(",");
+        paramMap.put("stuId", Arrays.asList(id));
+        commonDao.deleteOrUpDate(sql,paramMap);
+    }
+
     public void deleteById(String ids){
         String[] id=ids.split(",");
         for (String anId : id) {

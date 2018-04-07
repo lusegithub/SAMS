@@ -6,8 +6,11 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
     <title>学生社团管理系统</title>
     <link rel="stylesheet" href="/webjars/bootstrap/3.3.5/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="/static/css/common/bootstrapValidator.css"/>
     <script src="/webjars/jquery/3.1.1/jquery.min.js"></script>
     <script src="/webjars/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script src="/static/js/common/bootstrapValidator.js"></script>
+    <script src="/static/js/common/jQuery.Form.js"></script>
     <script src="/static/js/association/header.js"></script>
     <style>
         img{
@@ -114,14 +117,132 @@
                     <div class="col-sm-2">
                         <button type="button" class="btn btn-default" onclick="modify()">编辑</button>
                     </div>
+                    <div class="col-sm-2">
+                        <button type="button" class="btn btn-primary" onclick="modifyPwd()">修改密码</button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- 模态框（Modal） -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="myModalLabel">修改密码</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="myAdd" class="form-group" method="post" th:action="@{/association/modifyPwd}">
+                        <div class="form-group">
+                            <label for="password">新密码</label>
+                            <input id="password" name="password" class="form-control" type="password" placeholder="至少6位数字或字母">
+                        </div>
+                        <div class="form-group">
+                            <label for="npassword">确认密码</label>
+                            <input id="npassword" name="npassword" class="form-control" type="password" placeholder="至少6位数字或字母">
+                        </div>
+                        <div class="text-right">
+                            <button id="save" class="btn btn-primary" type="submit">提交</button>
+                            <button class="btn btn-danger" data-dismiss="modal">取消</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 模态框（Modal） -->
 </div>
 </body>
 </html>
 <script>
+
+    $(document).ready(function() {
+        $('#myAdd').bootstrapValidator({
+            live: 'live',
+            feedbackIcons: {
+                valid: 'glyphicon glyphicon-ok',
+                invalid: 'glyphicon glyphicon-remove',
+                validating: 'glyphicon glyphicon-refresh'
+            },
+            submitButtons: 'button[type="submit"]',
+            submitHandler: function(validator, form, submitButton) {
+                // 实用ajax提交表单
+                if (validator.isValid()) {
+                    var options = {
+                        success:  showResponse
+                    };
+                    $("#myAdd").ajaxSubmit(options);
+                }
+            },
+            fields: {
+                password: {
+                    validators: {
+                        notEmpty: {
+                            message: "密码不能为空"
+                        },
+                        stringLength: {
+                            min: 6,
+                            max: 20,
+                            message: '密码长度在6到20之间'
+                        }
+                    }
+                },
+                npassword: {
+                    message: '密码确认验证失败',
+                    validators: {
+                        notEmpty: {
+                            message: '密码不能为空'
+                        },
+                        identical: {
+                            field: 'password',
+                            message: '两次密码不相同'
+                        }
+                    }
+                }
+            }
+        });
+        $('#myAdd').submit(function() {
+            return false;
+            //非常重要，如果是false，则表明是不跳转
+            //在本页上处理，也就是ajax，如果是非false，则传统的form跳转。
+        });
+    });
+
+    function showResponse(data) {
+        if (data.resultCode === 0){
+            alert(data.resultInfo);
+            return
+        }
+        alert(data.resultInfo);
+        window.location.href="/logout"
+    }
+
+    $('#myModal').on('show.bs.modal', centerModals);
+    //禁用空白处点击关闭
+    //    $('#myModal').modal({
+    //        backdrop: 'static',
+    //        keyboard: false,//禁止键盘
+    //        show:false
+    //    });
+    //页面大小变化是仍然保证模态框水平垂直居中
+    $(window).on('resize', centerModals);
+
+    function centerModals() {
+        $('#myModal').each(function(i) {
+            var $clone = $(this).clone().css('display','block').appendTo('body');
+            var top = Math.round(($clone.height() - $clone.find('.modal-content').height()) / 2);
+            top = top > 0 ? top : 0;
+            $clone.remove();
+            $(this).find('.modal-content').css("margin-top", top);
+        });
+    }
+
+    function modifyPwd() {
+        $('#myModal').modal('show')
+    }
+
     function modify() {
         window.location.href="/association/detail/edit"
     }

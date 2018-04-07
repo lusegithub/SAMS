@@ -270,7 +270,7 @@
                 tpl+='<li class="list-group-item">班级：  '+data.className+'</li>';
                 tpl+='<li class="list-group-item">宿舍地址：  '+data.address+'</li>';
                 tpl+='<li class="list-group-item">联系电话：  '+data.phone+'</li>';
-                tpl+='<li class="list-group-item">个人描述：  '+data.description+'</li>';
+                tpl+='<li class="list-group-item" title="'+data.description+'" style="overflow: hidden">个人描述：  '+data.description+'</li>';
                 $('#base').append(tpl);
                 $('#myModal').modal('show')
             }

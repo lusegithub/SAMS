@@ -175,6 +175,10 @@
 </nav>
 <div class="container">
     <div class="row row-centered">
+        <div class="col-md-offset-3 col-md-6">
+            <div th:if="${param.logout}" class="alert alert-success">已注销</div>
+            <div th:if="${param.error}" class="alert alert-danger">账号或密码错误</div>
+        </div>
         <div class="well col-md-6 col-centered">
             <form class="form-horizontal" th:action="@{/login}" method="post">
                 <span class="heading">用户登录</span>

@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+    <title>学生社团管理系统</title>
+    <link rel="stylesheet" href="/webjars/bootstrap/3.3.5/css/bootstrap.min.css"/>
+    <link rel="stylesheet" type="text/css" href="/static/css/common/bootstrap-datetimepicker.css"/>
+    <link rel="stylesheet" href="/static/css/common/bootstrapValidator.css"/>
+    <script src="/webjars/jquery/3.1.1/jquery.min.js"></script>
+    <script src="/webjars/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script src="/static/js/common/jQuery.Form.js"></script>
+    <script src="/static/js/common/bootstrap-datetimepicker.js"></script>
+    <script src="/static/locales/bootstrap-datetimepicker.zh-CN.js"></script>
+    <script src="/static/js/common/bootstrapValidator.js"></script>
+    <script src="/static/js/association/header.js"></script>
+</head>
+<body>
+<div id="header"></div>
+<div class="container">
+    <div class="page-header">
+        <h2>基本信息</h2>
+    </div>
+    <div class="col-md-8">
+        <input type="hidden" id="id" th:value="${activity.id}">
+
+        <div class="well" th:text="${activity.name}" style="font-size: 20px">
+        </div>
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">申请时间</h3>
+            </div>
+            <div class="panel-body" th:text="${activity.applyTime}">
+            </div>
+        </div>
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">所属社团</h3>
+            </div>
+            <div class="panel-body" th:text="${activity.detail.name}">
+            </div>
+        </div>
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">简介</h3>
+            </div>
+            <div class="panel-body" th:text="${activity.description}">
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">内容</h3>
+            </div>
+            <div class="panel-body" th:text="${activity.content}">
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">时间</h3>
+            </div>
+            <div class="panel-body" th:text="${activity.startTime+' - '+activity.endTime}">
+            </div>
+        </div>
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">地点</h3>
+            </div>
+            <div class="panel-body" th:text="${activity.location}">
+            </div>
+        </div>
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">负责人及联系方式</h3>
+            </div>
+            <div class="panel-body" th:text="${activity.info}">
+            </div>
+        </div>
+
+    </div>
+
+    <div class="col-md-4">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h3 class="panel-title">操作</h3>
+            </div>
+            <div class="panel-body">
+                <div class="row" style="text-align: center">
+                    <div class="col-sm-2" th:if="${activity.status==1}">
+                        <button type="button" class="btn btn-default" onclick="send()">发布</button>
+                    </div>
+                    <div class="col-sm-2" th:if="${activity.status!=1}">
+                        无
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="send" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="sendLabel">发布活动</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="mySend" class="form-group" method="post" th:action="@{/association/activity/send}">
+                        <input type="hidden" id="activityId" name="id" value="">
+                        <div class="form-group">
+                            <label for="overTime">报名结束时间</label>
+                            <input id="overTime" name="overTime" class="form-control" type="text">
+                        </div>
+                        <div class="text-right">
+                            <button class="btn btn-primary" type="submit">确认发布</button>
+                            <button class="btn btn-danger" data-dismiss="modal">取消</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+<script>
+
+    $(document).ready(function() {
+
+        $('#overTime').datetimepicker({
+            format: 'yyyy-mm-dd hh:ii',
+            language: 'zh-CN',
+            autoclose: true
+        });
+
+        $('#mySend').submit(function() {
+            return false;
+            //非常重要，如果是false，则表明是不跳转
+            //在本页上处理，也就是ajax，如果是非false，则传统的form跳转。
+        });
+
+        $('#mySend').bootstrapValidator({
+            live: 'live',
+            feedbackIcons: {
+                valid: 'glyphicon glyphicon-ok',
+                invalid: 'glyphicon glyphicon-remove',
+                validating: 'glyphicon glyphicon-refresh'
+            },
+            submitButtons: 'button[type="submit"]',
+            submitHandler: function(validator, form, submitButton) {
+                // 实用ajax提交表单
+                if (validator.isValid()) {
+                    var options = {
+                        success:  showResponse
+                    };
+                    $("#mySend").ajaxSubmit(options);
+                }
+            },
+            fields: {
+                overTime: {
+                    validators: {
+                        notEmpty: {
+                            message: "请选择一个时间"
+                        }
+                    }
+                }
+            }
+        });
+    });
+
+    function showResponse(data) {
+        if (data.resultCode === 0){
+            alert(data.resultInfo);
+            return
+        }
+        alert(data.resultInfo);
+        window.location.href="/association/activity/listPage"
+    }
+
+    $('#send').on('show.bs.modal', centerModals);
+    //禁用空白处点击关闭
+    //    $('#myModal').modal({
+    //        backdrop: 'static',
+    //        keyboard: false,//禁止键盘
+    //        show:false
+    //    });
+    //页面大小变化是仍然保证模态框水平垂直居中
+    $(window).on('resize', centerModals);
+
+    function centerModals() {
+        $('#send').each(function(i) {
+            var $clone = $(this).clone().css('display','block').appendTo('body');
+            var top = Math.round(($clone.height() - $clone.find('.modal-content').height()) / 2);
+            top = top > 0 ? top : 0;
+            $clone.remove();
+            $(this).find('.modal-content').css("margin-top", top);
+        });
+    }
+
+    function send() {
+        var id=$("#id").val();
+        $("#activityId").val(id);
+        $('#send').modal('show')
+    }
+</script>

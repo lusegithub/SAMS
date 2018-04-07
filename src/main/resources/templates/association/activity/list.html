@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="/webjars/bootstrap/3.3.5/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="/static/css/common/bootstrap-table.min.css"/>
     <link rel="stylesheet" type="text/css" href="/static/css/common/bootstrap-datetimepicker.css"/>
+    <link rel="stylesheet" href="/static/css/common/bootstrapValidator.css"/>
     <script src="/webjars/jquery/3.1.1/jquery.min.js"></script>
     <script src="/webjars/bootstrap/3.3.5/js/bootstrap.min.js"></script>
     <script src="/static/js/common/bootstrap-table.min.js"></script>
@@ -13,6 +14,7 @@
     <script src="/static/js/common/jQuery.Form.js"></script>
     <script src="/static/js/common/bootstrap-datetimepicker.js"></script>
     <script src="/static/locales/bootstrap-datetimepicker.zh-CN.js"></script>
+    <script src="/static/js/common/bootstrapValidator.js"></script>
     <script src="/static/js/association/header.js"></script>
 </head>
 <body>
@@ -121,7 +123,8 @@
                     <form id="mySend" class="form-group" method="post" th:action="@{/association/activity/send}">
                         <input type="hidden" id="activityId" name="id" value="">
                         <div class="form-group">
-                            <label for="overTime">报名结束时间<input id="overTime" name="overTime" class="form-control" type="text"></label>
+                            <label for="overTime">报名结束时间</label>
+                            <input id="overTime" name="overTime" class="form-control" type="text">
                         </div>
                         <div class="text-right">
                             <button class="btn btn-primary" type="submit">确认发布</button>
@@ -171,13 +174,37 @@
         });
 
         $('#mySend').submit(function() {
-            var options = {
-                success:  showResponse
-            };
-            $(this).ajaxSubmit(options);
             return false;
             //非常重要，如果是false，则表明是不跳转
             //在本页上处理，也就是ajax，如果是非false，则传统的form跳转。
+        });
+
+        $('#mySend').bootstrapValidator({
+            live: 'live',
+            feedbackIcons: {
+                valid: 'glyphicon glyphicon-ok',
+                invalid: 'glyphicon glyphicon-remove',
+                validating: 'glyphicon glyphicon-refresh'
+            },
+            submitButtons: 'button[type="submit"]',
+            submitHandler: function(validator, form, submitButton) {
+                // 实用ajax提交表单
+                if (validator.isValid()) {
+                    var options = {
+                        success:  showResponse
+                    };
+                    $("#mySend").ajaxSubmit(options);
+                }
+            },
+            fields: {
+                overTime: {
+                    validators: {
+                        notEmpty: {
+                            message: "请选择一个时间"
+                        }
+                    }
+                }
+            }
         });
     });
 
@@ -190,7 +217,8 @@
         window.location.href="/association/activity/listPage"
     }
 
-    $('#myModal').on('show.bs.modal', centerModals);
+    $('#myModal').on('show.bs.modal', centerModals('myModal'));
+    $('#send').on('show.bs.modal', centerModals('send'));
     //禁用空白处点击关闭
     //    $('#myModal').modal({
     //        backdrop: 'static',
@@ -198,10 +226,10 @@
     //        show:false
     //    });
     //页面大小变化是仍然保证模态框水平垂直居中
-    $(window).on('resize', centerModals);
+    $(window).on('resize', centerModals('myModal'));
 
-    function centerModals() {
-        $('#myModal').each(function(i) {
+    function centerModals(id) {
+        $('#'+id).each(function(i) {
             var $clone = $(this).clone().css('display','block').appendTo('body');
             var top = Math.round(($clone.height() - $clone.find('.modal-content').height()) / 2);
             top = top > 0 ? top : 0;
@@ -372,7 +400,7 @@
             ids += rows[i]['id'] + ",";
         }
         ids = ids.substring(0, ids.length - 1);
-        window.location.href="/admin/association/get/"+ids;
+        window.location.href="/association/activity/get/"+ids;
     }
 
     function send() {

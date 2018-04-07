@@ -6,6 +6,7 @@ import com.jacky.sams.entity.*;
 import com.jacky.sams.service.ActivityService;
 import com.jacky.sams.service.AssociationService;
 import com.jacky.sams.service.StudentService;
+import com.jacky.sams.service.SysUserService;
 import com.jacky.sams.util.ImageUtil;
 import com.jacky.sams.vo.StudentAssociationVo;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,6 +21,7 @@ import sun.security.pkcs11.P11Util;
 
 import javax.annotation.Resource;
 import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -45,7 +47,7 @@ public class AssociationController {
     private StudentService studentService;
 
     @Resource
-    private CommonDao commonDao;
+    private SysUserService userService;
 
     @RequestMapping(value = "/index")
     public String index(){
@@ -97,6 +99,18 @@ public class AssociationController {
         return result;
     }
 
+    @PostMapping("/modifyPwd")
+    @ResponseBody
+    public Result modifyPwd(String password){
+        SysUser user= (SysUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Result result=new Result();
+        user.setPassword(password);
+        userService.addUser(user);
+        result.setResultCode(1);
+        result.setResultInfo("修改成功,请重新登录！");
+        return result;
+    }
+
     @RequestMapping("/activity/listPage")
     public String getActivityPage(Model model){
         return "association/activity/list";
@@ -135,6 +149,13 @@ public class AssociationController {
         return result;
     }
 
+    @GetMapping("/activity/get/{id}")
+    public String getActivity(Model model,@PathVariable("id") String id){
+        Activity activity=activityService.getActivity(id);
+        model.addAttribute("activity",activity);
+        return "/association/activity/detail";
+    }
+
     @PostMapping("/activity/delete")
     @ResponseBody
     public void deleteActivity(String ids){
@@ -143,11 +164,22 @@ public class AssociationController {
 
     @PostMapping("/activity/send")
     @ResponseBody
-    public Result sendActivity(String overTime,String id){
+    public Result sendActivity(String overTime,String id) throws ParseException {
         Result result=new Result();
+        result.setResultCode(0);
         Date date=new Date();
         SimpleDateFormat formatter=new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        Date over=formatter.parse(overTime);
+        if (over.before(date)){
+            result.setResultInfo("报名结束时间不能早于当前时间！");
+            return result;
+        }
         Activity activity=activityService.getActivity(id);
+        Date start=formatter.parse(activity.getStartTime());
+        if (over.after(start)){
+            result.setResultInfo("报名结束时间不能晚于活动开始时间！");
+            return result;
+        }
         activity.setOverTime(overTime);
         activity.setSendTime(formatter.format(date));
         activity.setStatus(2);
@@ -184,9 +216,19 @@ public class AssociationController {
 
     @PostMapping("/associator/pass")
     @ResponseBody
-    public void pass(String ids){
+    public void pass(String ids,Integer code){
         SysUser user= (SysUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         AssociationDetail detail=user.getAssociationDetail();
-        studentService.updateStatus(ids,detail.getId());
+        if (code == 1) {
+            studentService.updateStatus(ids, detail.getId());
+        }else {
+            studentService.refuse(ids,detail.getId());
+        }
+    }
+
+    @PostMapping("/student/get")
+    @ResponseBody
+    public Student getStudent(String id){
+        return studentService.findOne(id);
     }
 }
