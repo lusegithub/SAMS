@@ -20,7 +20,7 @@ public class StudentAssociation implements Serializable {
     @JsonIgnore
     private Student student;
 
-    //状态{1:已加入；2：待审核}
+    //状态{0:未通过；1:已加入；2：待审核}
     private int status;
 
     //申请时间

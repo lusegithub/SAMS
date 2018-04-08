@@ -3,6 +3,7 @@ package com.jacky.sams.service;
 import com.jacky.sams.dao.ActivityRepository;
 import com.jacky.sams.dao.impl.CommonDao;
 import com.jacky.sams.entity.Activity;
+import com.jacky.sams.util.ScheduledUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
@@ -11,6 +12,7 @@ import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import javax.persistence.criteria.Predicate;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -22,6 +24,9 @@ public class ActivityService {
 
     @Resource
     private CommonDao commonDao;
+
+    @Resource
+    private ScheduledUtil scheduledUtil;
 
     public Page<Activity> findAllActivityByPage(HashMap<String ,Object> hashMap, int pageIndex, int pageSize){
         Specification querySpecifi = (Specification<Activity>) (root, criteriaQuery, criteriaBuilder) -> {
@@ -41,6 +46,19 @@ public class ActivityService {
     }
 
     public void addActivity(Activity activity){
+        activityRepository.save(activity);
+    }
+
+    public void sendActivity(Activity activity) throws ParseException {
+        String overTime=activity.getOverTime();
+        SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        Date over=format.parse(overTime);
+        scheduledUtil.addJob(over,new Runnable() {
+            @Override
+            public void run() {
+                changeStatus(activity.getId(),3,2);
+            }
+        });
         activityRepository.save(activity);
     }
 
@@ -74,9 +92,16 @@ public class ActivityService {
             if(!StringUtils.isEmpty(hashMap.get("status"))){
                 predicates.add(criteriaBuilder.equal(root.get("status").as(Integer.class), hashMap.get("status")));
             }
+            if(!StringUtils.isEmpty(hashMap.get("association_id"))){
+                predicates.add(criteriaBuilder.equal(root.join("detail").get("id"), hashMap.get("association_id")));
+            }
+            if(!StringUtils.isEmpty(hashMap.get("stuId"))){
+                predicates.add(criteriaBuilder.equal(root.join("studentActivities").join("student").get("id"), hashMap.get("stuId")));
+            }
             if (!StringUtils.isEmpty(hashMap.get("association_ids"))){
                 predicates.add(criteriaBuilder.in(root.join("detail").get("id")).value(hashMap.get("association_ids")));
             }
+            criteriaQuery.orderBy(criteriaBuilder.desc(root.get("sendTime")));
             return criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()]));
         };
         return activityRepository.findAll(querySpecifi);

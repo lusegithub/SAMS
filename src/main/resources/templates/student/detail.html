@@ -179,6 +179,10 @@
     function pwd() {
         var pwd=$("#password").val();
         var npwd=$("#npassword").val();
+        if (pwd===""||npwd===""){
+            alert("密码不能为空");
+            return
+        }
         if (pwd!==npwd){
             alert("两次密码输入不一致，请重新输入");
             return

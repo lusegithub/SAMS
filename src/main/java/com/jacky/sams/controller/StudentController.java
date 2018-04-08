@@ -7,6 +7,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -99,6 +100,7 @@ public class StudentController {
         for (StudentAssociation studentAssociation:associations){
             if (studentAssociation.getAssociation().getId().equals(detail.getId())){
                 flag=true;
+                model.addAttribute("studentAssociation",studentAssociation);
                 break;
             }
         }
@@ -117,7 +119,7 @@ public class StudentController {
         studentAssociation.setStudent(student);
         studentAssociation.setStatus(2);
         Date date=new Date();
-        SimpleDateFormat formatter=new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat formatter=new SimpleDateFormat("yyyy-MM-dd HH:mm");
         studentAssociation.setApplyTime(formatter.format(date));
         detail.getStudentAssociations().add(studentAssociation);
         studentService.addStudent(student);
@@ -125,7 +127,7 @@ public class StudentController {
     }
 
     @RequestMapping(value = "/activity/listPage")
-    public String activityList(Model model){
+    public String activityList(Model model,String id){
         SysUser user= (SysUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Student student=studentService.findStudentByUserId(user.getId());
         HashMap<String ,Object> paramMap=new HashMap<>();
@@ -133,23 +135,63 @@ public class StudentController {
         paramMap.put("status",1);
         List<AssociationDetail> details=associationService.findAllAssociationByStudent(paramMap);
         model.addAttribute("details",details);
-        //加入的社团
-        List<String> list=new ArrayList<>();
-        for (AssociationDetail detail:details){
-            list.add(detail.getId());
+        if (StringUtils.isEmpty(id)) {
+            if (details.size()==0){
+                List<Activity> startActivities = new ArrayList<>();
+                List<Activity> overActivities = new ArrayList<>();
+                model.addAttribute("overActivities", overActivities);
+                model.addAttribute("startActivities", startActivities);
+            }else {
+                //加入的社团
+                List<String> list = new ArrayList<>();
+                for (AssociationDetail detail : details) {
+                    list.add(detail.getId());
+                }
+                //报名中的活动
+                HashMap<String, Object> map = new HashMap<>();
+                map.put("status", 2);
+                map.put("association_ids", list);
+                List<Activity> startActivities = activityService.getAllActivity(map);
+                model.addAttribute("startActivities", startActivities);
+                //已结束的活动
+                HashMap<String, Object> mapOver = new HashMap<>();
+                mapOver.put("status", 3);
+                mapOver.put("association_ids", list);
+                List<Activity> overActivities = activityService.getAllActivity(mapOver);
+                model.addAttribute("overActivities", overActivities);
+                model.addAttribute("id", "");
+            }
+        }else {
+            if ("mine".equals(id)){
+                //报名中的活动
+                model.addAttribute("id", "mine");
+                HashMap<String, Object> map = new HashMap<>();
+                map.put("status", 2);
+                map.put("stuId",student.getId());
+                List<Activity> startActivities = activityService.getAllActivity(map);
+                model.addAttribute("startActivities", startActivities);
+                //已结束的活动
+                HashMap<String, Object> mapOver = new HashMap<>();
+                mapOver.put("status", 3);
+                mapOver.put("stuId",student.getId());
+                List<Activity> overActivities = activityService.getAllActivity(mapOver);
+                model.addAttribute("overActivities", overActivities);
+            }else {
+                //报名中的活动
+                model.addAttribute("id", id);
+                HashMap<String, Object> map = new HashMap<>();
+                map.put("status", 2);
+                map.put("association_id", id);
+                List<Activity> startActivities = activityService.getAllActivity(map);
+                model.addAttribute("startActivities", startActivities);
+                //已结束的活动
+                HashMap<String, Object> mapOver = new HashMap<>();
+                mapOver.put("status", 3);
+                mapOver.put("association_id", id);
+                List<Activity> overActivities = activityService.getAllActivity(mapOver);
+                model.addAttribute("overActivities", overActivities);
+            }
         }
-        //报名中的活动
-        HashMap<String ,Object> map=new HashMap<>();
-        map.put("status",2);
-        map.put("association_ids",list);
-        List<Activity> startActivities=activityService.getAllActivity(map);
-        model.addAttribute("startActivities",startActivities);
-        //已结束的活动
-        HashMap<String ,Object> mapOver=new HashMap<>();
-        mapOver.put("status",3);
-        mapOver.put("association_ids",list);
-        List<Activity> overActivities=activityService.getAllActivity(mapOver);
-        model.addAttribute("overActivities",overActivities);
         return "student/activity/list";
     }
 
@@ -168,6 +210,23 @@ public class StudentController {
         activity.getStudentActivities().add(studentActivity);
         studentService.addStudent(student);
         activityService.addActivity(activity);
+    }
+
+    @GetMapping("/activity/get/{id}")
+    public String getActivity(Model model,@PathVariable("id") String id){
+        Activity activity=activityService.getActivity(id);
+        model.addAttribute("activity",activity);
+        Student student=getCurrentStudent();
+        Set<StudentActivity> activities=activity.getStudentActivities();
+        boolean flag=false;
+        for (StudentActivity studentActivity:activities){
+            if (studentActivity.getStudent().getId().equals(student.getId())){
+                flag=true;
+                break;
+            }
+        }
+        model.addAttribute("flag",flag);
+        return "/student/activity/detail";
     }
 
     private Student getCurrentStudent(){

@@ -183,7 +183,7 @@ public class AssociationController {
         activity.setOverTime(overTime);
         activity.setSendTime(formatter.format(date));
         activity.setStatus(2);
-        activityService.addActivity(activity);
+        activityService.sendActivity(activity);
         result.setResultCode(1);
         result.setResultInfo("发布成功");
         return result;

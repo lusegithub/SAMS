@@ -54,44 +54,51 @@
                 <legend>筛选</legend>
             </fieldset>
             <ul class="nav nav-tabs nav-stacked" data-spy="affix" data-offset-top="125">
-                <li th:each="detail:${details}"><a href="#section-1" th:text="${detail.name}">啦啦啦啦啦啦啦啦</a></li>
+                <li th:class="${'mine' == id ? 'active' : ''}"><a href="/student/activity/listPage?id=mine">我参与的</a></li>
+            </ul>
+            <div th:if="${details.size()==0}" style="margin-top: 50px">你暂时没有加入社团！</div>
+            <ul th:if="${details.size()!=0}" style="margin-top: 50px"  class="nav nav-tabs nav-stacked" data-spy="affix" data-offset-top="125">
+                <li th:class="${detail.id == id ? 'active' : ''}" th:each="detail:${details}"><a th:href="${'/student/activity/listPage?id='+detail.id}" th:text="${detail.name}">啦啦啦啦啦啦啦啦</a></li>
             </ul>
         </div>
         <div class="col-md-9">
             <fieldset>
                 <legend>进行中</legend>
             </fieldset>
+            <div style="padding-bottom: 20px" th:if="${startActivities.size() == 0}">无</div>
             <div class="panel panel-default" th:each="start:${startActivities}">
                 <div class="panel-heading" th:text="${start.name}"></div>
                 <div class="panel-body">
                     <p th:text="${start.description}"></p>
                 </div>
                 <ul class="list-group">
-                    <li class="list-group-item" th:text="${'时间：'+start.startTime+'—'+start.endTime}"></li>
+                    <li class="list-group-item" th:text="${'时间：'+start.startTime+' - '+start.endTime}"></li>
                     <li class="list-group-item" th:text="${'地点：'+start.location}"></li>
                     <li class="list-group-item" th:text="${'所属社团：'+start.detail.name}"></li>
                     <li class="list-group-item" th:text="${'发布时间：'+start.sendTime}"></li>
                     <li class="list-group-item" th:text="${'报名结束时间：'+start.overTime}"></li>
                     <li class="list-group-item" th:text="${'已报名人数：'+start.studentActivities.size()}"></li>
                 </ul>
-                <div class="panel-footer text-right"><button type="button" class="btn btn-success" th:onclick="${'join('''+start.id+''')'}">参加</button></div>
+                <div class="panel-footer text-right"><button type="button" class="btn btn-primary" th:onclick="${'goDetail('''+start.id+''')'}">详情</button></div>
             </div>
             <fieldset>
                 <legend>已结束</legend>
             </fieldset>
+            <div style="padding-bottom: 20px" th:if="${overActivities.size() == 0}">无</div>
             <div class="panel panel-default" th:each="over:${overActivities}">
                 <div class="panel-heading" th:text="${over.name}"></div>
                 <div class="panel-body">
                     <p th:text="${over.description}"></p>
                 </div>
                 <ul class="list-group">
-                    <li class="list-group-item" th:text="${'时间：'+over.startTime+'—'+over.endTime}"></li>
+                    <li class="list-group-item" th:text="${'时间：'+over.startTime+' - '+over.endTime}"></li>
                     <li class="list-group-item" th:text="${'地点：'+over.location}"></li>
                     <li class="list-group-item" th:text="${'所属社团：'+over.detail.name}"></li>
                     <li class="list-group-item" th:text="${'发布时间：'+over.sendTime}"></li>
                     <li class="list-group-item" th:text="${'报名结束时间：'+over.overTime}"></li>
                     <li class="list-group-item" th:text="${'已报名人数：'+over.studentActivities.size()}"></li>
                 </ul>
+                <div class="panel-footer text-right"><button type="button" class="btn btn-primary" th:onclick="${'goDetail('''+over.id+''')'}">详情</button></div>
             </div>
         </div>
     </div>
@@ -99,20 +106,7 @@
 </body>
 </html>
 <script>
-    function join(id) {
-        $.ajax({
-            url: '/student/activity/join',
-            type: 'post',
-            data: {
-                id: id
-            },
-            success: function () {
-                alert("成功参加");
-                window.location.href="/student/activity/listPage"
-            },
-            error: function () {
-                alert("网络错误")
-            }
-        })
+    function goDetail(id) {
+        window.location.href="/student/activity/get/"+id;
     }
 </script>

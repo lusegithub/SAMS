@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+    <title>学生社团管理系统</title>
+    <link rel="stylesheet" href="/webjars/bootstrap/3.3.5/css/bootstrap.min.css"/>
+    <link rel="stylesheet" type="text/css" href="/static/css/common/bootstrap-datetimepicker.css"/>
+    <link rel="stylesheet" href="/static/css/common/bootstrapValidator.css"/>
+    <script src="/webjars/jquery/3.1.1/jquery.min.js"></script>
+    <script src="/webjars/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script src="/static/js/common/jQuery.Form.js"></script>
+    <script src="/static/js/common/bootstrap-datetimepicker.js"></script>
+    <script src="/static/locales/bootstrap-datetimepicker.zh-CN.js"></script>
+    <script src="/static/js/common/bootstrapValidator.js"></script>
+    <script src="/static/js/student/header.js"></script>
+</head>
+<body>
+<div id="header"></div>
+<div class="container">
+    <div class="page-header">
+        <h2>基本信息</h2>
+    </div>
+    <div class="col-md-8">
+        <input type="hidden" id="id" th:value="${activity.id}">
+
+        <div class="well" th:text="${activity.name}" style="font-size: 20px">
+        </div>
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">发布时间</h3>
+            </div>
+            <div class="panel-body" th:text="${activity.sendTime}">
+            </div>
+        </div>
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">报名截止时间</h3>
+            </div>
+            <div class="panel-body" th:text="${activity.overTime}">
+            </div>
+        </div>
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">所属社团</h3>
+            </div>
+            <div class="panel-body" th:text="${activity.detail.name}">
+            </div>
+        </div>
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">简介</h3>
+            </div>
+            <div class="panel-body" th:text="${activity.description}">
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">内容</h3>
+            </div>
+            <div class="panel-body" th:text="${activity.content}">
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">活动时间</h3>
+            </div>
+            <div class="panel-body" th:text="${activity.startTime+' - '+activity.endTime}">
+            </div>
+        </div>
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">地点</h3>
+            </div>
+            <div class="panel-body" th:text="${activity.location}">
+            </div>
+        </div>
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">负责人及联系方式</h3>
+            </div>
+            <div class="panel-body" th:text="${activity.info}">
+            </div>
+        </div>
+
+    </div>
+
+    <div class="col-md-4">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h3 class="panel-title">操作</h3>
+            </div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-sm-12" th:if="${flag == true}">
+                        你已经报名参加此活动！
+                    </div>
+                    <div class="col-sm-2" th:if="${flag == false && activity.status == 2}">
+                        <button type="button" class="btn btn-primary" onclick="join()">报名</button>
+                    </div>
+                    <div class="col-sm-12" th:if="${flag == false && activity.status == 3}">
+                        报名已结束
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+<script>
+    function join() {
+        var id=$("#id").val();
+        $.ajax({
+            url: '/student/activity/join',
+            type: 'post',
+            data: {
+                id: id
+            },
+            success: function () {
+                alert("报名成功");
+                window.location.href="/student/activity/listPage"
+            },
+            error: function () {
+                alert("网络错误")
+            }
+        })
+    }
+</script>
