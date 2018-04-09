@@ -3,6 +3,7 @@ package com.jacky.sams.service;
 import com.jacky.sams.dao.StudentRepository;
 import com.jacky.sams.dao.impl.CommonDao;
 import com.jacky.sams.entity.Student;
+import com.jacky.sams.vo.StudentActivityVo;
 import com.jacky.sams.vo.StudentAssociationVo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -99,5 +100,24 @@ public class StudentService {
         for (String anId : id) {
             repository.deleteById(anId);
         }
+    }
+
+    public Page<StudentActivityVo> findStudentsByActivity(HashMap<String ,Object> hashMap, int pageIndex, int pageSize){
+        String fromSql="FROM student s JOIN student_activity sa ON s.id=sa.student_id ";
+        String whereSql="WHERE sa.activity_id=:activity_id";
+        if (!StringUtils.isEmpty(hashMap.get("name"))){
+            whereSql+=" and s.name like :name";
+        }
+        if (!StringUtils.isEmpty(hashMap.get("stuNo"))){
+            whereSql+=" and s.stu_no=:stuNo";
+        }
+        String sql="SELECT s.*,sa.apply_time "+fromSql+whereSql;
+        String countsql="SELECT count(*) "+fromSql+whereSql;
+        List vos= commonDao.queryListEntity(sql,hashMap,StudentActivityVo.class);
+        if (vos==null){
+            vos=new ArrayList();
+        }
+        int total=commonDao.getCountBy(countsql,hashMap);
+        return new PageImpl<StudentActivityVo>(vos,new PageRequest(pageIndex-1,pageSize),total);
     }
 }

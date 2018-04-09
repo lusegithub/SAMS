@@ -94,8 +94,14 @@
                     <div class="col-sm-2" th:if="${activity.status==1}">
                         <button type="button" class="btn btn-default" onclick="send()">发布</button>
                     </div>
-                    <div class="col-sm-2" th:if="${activity.status!=1}">
-                        无
+                    <div class="col-sm-12" th:if="${activity.status==0}">
+                        该活动未通过审核！
+                    </div>
+                    <div class="col-sm-12" th:if="${activity.status==4}">
+                        申请已提交，请等待管理员审核！
+                    </div>
+                    <div class="col-sm-2" th:if="${activity.status==2||activity.status==3}">
+                        <button type="button" class="btn btn-default" onclick="look()">查看报名成员</button>
                     </div>
                 </div>
             </div>
@@ -206,5 +212,10 @@
         var id=$("#id").val();
         $("#activityId").val(id);
         $('#send').modal('show')
+    }
+
+    function look() {
+        var id=$("#id").val();
+        window.location.href="/association/activity/enroll/"+id;
     }
 </script>

@@ -8,6 +8,7 @@ import com.jacky.sams.service.AssociationService;
 import com.jacky.sams.service.StudentService;
 import com.jacky.sams.service.SysUserService;
 import com.jacky.sams.util.ImageUtil;
+import com.jacky.sams.vo.StudentActivityVo;
 import com.jacky.sams.vo.StudentAssociationVo;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -187,6 +188,30 @@ public class AssociationController {
         result.setResultCode(1);
         result.setResultInfo("发布成功");
         return result;
+    }
+
+    @RequestMapping("/activity/enroll/{id}")
+    public String getActivityStudentPage(Model model,@PathVariable("id") String id){
+        model.addAttribute("id",id);
+        return "association/activity/enroll";
+    }
+
+    @PostMapping("/activity/enroll")
+    @ResponseBody
+    public HashMap<String, Object> getActivityStudent(String activityId,String name,String stuNo, int pageIndex, int pageSize){
+        HashMap<String ,Object> hashMap=new HashMap<>();
+        HashMap<String ,Object> paramMap=new HashMap<>();
+        paramMap.put("activity_id",activityId);
+        if (!StringUtils.isEmpty(name)){
+            paramMap.put("name","%"+name+"%");
+        }
+        if (!StringUtils.isEmpty(stuNo)){
+            paramMap.put("stuNo",stuNo);
+        }
+        Page<StudentActivityVo> students=studentService.findStudentsByActivity(paramMap,pageIndex,pageSize);
+        hashMap.put("data",students.getContent());
+        hashMap.put("total",students.getTotalElements());
+        return hashMap;
     }
 
     @RequestMapping("/associator/listPage")

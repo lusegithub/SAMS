@@ -1,62 +1,52 @@
-package com.jacky.sams.entity;
+package com.jacky.sams.vo;
 
-import org.hibernate.annotations.GenericGenerator;
+public class StudentActivityVo {
 
-import javax.persistence.*;
-import java.util.List;
-import java.util.Set;
-
-@Entity
-public class Student {
-
-    @Id
-    @GeneratedValue(generator = "system-uuid")
-    @GenericGenerator(name = "system-uuid", strategy = "uuid")
-    @Column(length = 50)
     private String id;
 
     //姓名
-    private String name="";
+    private String name;
 
     //学号
-    private String stuNo="";
+    private String stuNo;
 
     //性别
-    private String sex="";
+    private String sex;
 
     //出生年月
-    private String birthday="";
+    private String birthday;
 
     //学院
-    private String institution="";
+    private String institution;
 
     //专业
-    private String profession="";
+    private String profession;
 
     //年级
-    private String grade="";
+    private String grade;
 
     //班级
-    private String className="";
+    private String className;
 
     //宿舍地址
-    private String address="";
+    private String address;
 
     //联系电话
-    private String phone="";
+    private String phone;
 
     //个人描述
-    private String description="";
+    private String description;
 
-    @OneToOne(cascade = {CascadeType.REFRESH,CascadeType.REMOVE},fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_id")
-    private SysUser user;
+    //报名时间
+    private String applyTime;
 
-    @OneToMany(mappedBy = "student",cascade={CascadeType.REMOVE})
-    private Set<StudentAssociation> studentAssociations;
+    public String getId() {
+        return id;
+    }
 
-    @OneToMany(mappedBy = "student",cascade={CascadeType.REMOVE})
-    private Set<StudentActivity> studentActivities;
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String getName() {
         return name;
@@ -146,35 +136,11 @@ public class Student {
         this.description = description;
     }
 
-    public String getId() {
-        return id;
+    public String getApplyTime() {
+        return applyTime;
     }
 
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public Set<StudentAssociation> getStudentAssociations() {
-        return studentAssociations;
-    }
-
-    public void setStudentAssociations(Set<StudentAssociation> studentAssociations) {
-        this.studentAssociations = studentAssociations;
-    }
-
-    public SysUser getUser() {
-        return user;
-    }
-
-    public void setUser(SysUser user) {
-        this.user = user;
-    }
-
-    public Set<StudentActivity> getStudentActivities() {
-        return studentActivities;
-    }
-
-    public void setStudentActivities(Set<StudentActivity> studentActivities) {
-        this.studentActivities = studentActivities;
+    public void setApplyTime(String applyTime) {
+        this.applyTime = applyTime;
     }
 }
