@@ -171,7 +171,7 @@
         </div>
         <div class="collapse navbar-collapse" id="navbar">
             <ul class="nav navbar-nav navbar-right main-nav">
-                <li><a th:href="@{/applypage}">申请成立社团</a></li>
+                <li><a th:href="@{/applypage}">社团加入</a></li>
                 <li><a href="javascript:void(0)" onclick="signUp()">学生注册</a></li>
             </ul>
         </div>
@@ -306,6 +306,34 @@
                         identical: {
                             field: 'password',
                             message: '两次密码不相同'
+                        }
+                    }
+                },
+                name: {
+                    validators: {
+                        notEmpty: {
+                            message: "姓名不能为空"
+                        }
+                    }
+                },
+                stuNo: {
+                    validators: {
+                        notEmpty: {
+                            message: "学号不能为空"
+                        }
+                    }
+                },
+                institution: {
+                    validators: {
+                        notEmpty: {
+                            message: "学院不能为空"
+                        }
+                    }
+                },
+                profession: {
+                    validators: {
+                        notEmpty: {
+                            message: "专业不能为空"
                         }
                     }
                 }
