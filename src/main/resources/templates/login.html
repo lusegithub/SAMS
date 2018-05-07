@@ -346,7 +346,11 @@
         });
     });
 
-    function showResponse() {
+    function showResponse(data) {
+        if (data.resultCode===0){
+            alert(data.resultInfo);
+            return
+        }
         alert("注册成功，请登录后完善个人信息！");
         window.location.href="/login"
     }

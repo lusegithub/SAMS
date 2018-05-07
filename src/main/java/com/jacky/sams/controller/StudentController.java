@@ -37,7 +37,14 @@ public class StudentController {
 
     @PostMapping("/signup")
     @ResponseBody
-    public void signUp(Student student, SysUser user){
+    public Result signUp(Student student, SysUser user){
+        Result result=new Result();
+        SysUser oldUser=userService.getUser(user.getUsername());
+        if (oldUser!=null){
+            result.setResultCode(0);
+            result.setResultInfo("账号已存在，请重新输入！");
+            return result;
+        }
         SysRole role=roleService.getRole("2");
         user.setRole(role);
         Date date=new Date();
@@ -46,6 +53,8 @@ public class StudentController {
         userService.addUser(user);
         student.setUser(user);
         studentService.addStudent(student);
+        result.setResultCode(1);
+        return result;
     }
 
     @RequestMapping(value = "/index")
