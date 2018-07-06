@@ -56,18 +56,23 @@ public class AssociationService {
 
     public Page<AssociationDetail> findAllAssociationByPage(HashMap<String ,Object> hashMap, int pageIndex, int pageSize){
         Specification querySpecifi = (Specification<AssociationDetail>) (root, criteriaQuery, criteriaBuilder) -> {
+            //构造查询语句
             List<Predicate> predicates = new ArrayList<>();
+            //判断是否根据类别查询
             if(null != hashMap.get("category") && !hashMap.get("category").equals("")){
                 predicates.add(criteriaBuilder.equal(root.get("category"), (String) hashMap.get("category")));
             }
+            //判断是否根据名称查询
             if(null != hashMap.get("name") && !hashMap.get("name").equals("")){
                 predicates.add(criteriaBuilder.like(root.get("name"), "%"+(String) hashMap.get("name")+"%"));
             }
+            //判断是否根据状态查询
             if(null != hashMap.get("pass") && !hashMap.get("pass").equals("")){
                 predicates.add(criteriaBuilder.equal(root.get("pass").as(Integer.class), (Integer) hashMap.get("pass")));
             }
             return criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()]));
         };
+        //返回搜索结果
         return associationDetailRepository.findAll(querySpecifi,new PageRequest(pageIndex-1,pageSize));
     }
 
@@ -76,14 +81,17 @@ public class AssociationService {
     }
 
     public void pass(String id,Integer passCode){
+        //获取选中的社团
         AssociationDetail detail=associationDetailRepository.findById(id).get();
+        //设置审核结果
         detail.setPass(passCode);
+        //如果审核通过，设置审核通过的时间
         if (passCode==1){
             Date date=new Date();
             SimpleDateFormat formatter=new SimpleDateFormat("yyyy-MM-dd HH:mm");
             detail.setBuildTime(formatter.format(date));
         }
-        associationDetailRepository.save(detail);
+        associationDetailRepository.save(detail);//更新数据库信息
     }
 
     public void save(AssociationDetail detail){

@@ -40,15 +40,18 @@ public class StudentController {
     public Result signUp(Student student, SysUser user){
         Result result=new Result();
         SysUser oldUser=userService.getUser(user.getUsername());
+        //判断系统是否存在相同的账号
         if (oldUser!=null){
             result.setResultCode(0);
             result.setResultInfo("账号已存在，请重新输入！");
             return result;
         }
+        //获取学生用户的角色信息
         SysRole role=roleService.getRole("2");
         user.setRole(role);
         Date date=new Date();
         SimpleDateFormat formatter=new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        //设置注册时间
         user.setSignUpTime(formatter.format(date));
         userService.addUser(user);
         student.setUser(user);
@@ -121,7 +124,9 @@ public class StudentController {
     @ResponseBody
     public void enterAssociation(String id){
         SysUser user= (SysUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        //获取执行当前操作的学生
         Student student=studentService.findStudentByUserId(user.getId());
+        //确定学生即将加入的社团
         AssociationDetail detail=associationService.getAssociation(id);
         StudentAssociation studentAssociation=new StudentAssociation();
         studentAssociation.setAssociation(detail);
@@ -129,6 +134,7 @@ public class StudentController {
         studentAssociation.setStatus(2);
         Date date=new Date();
         SimpleDateFormat formatter=new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        //设置加入社团的申请时间
         studentAssociation.setApplyTime(formatter.format(date));
         detail.getStudentAssociations().add(studentAssociation);
         studentService.addStudent(student);
@@ -208,13 +214,16 @@ public class StudentController {
     @ResponseBody
     public void joinActivity(String id){
         SysUser user= (SysUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        //查询当前操作的学生
         Student student=studentService.findStudentByUserId(user.getId());
+        //获取选择的活动
         Activity activity=activityService.getActivity(id);
         StudentActivity studentActivity=new StudentActivity();
         studentActivity.setActivity(activity);
         studentActivity.setStudent(student);
         Date date=new Date();
         SimpleDateFormat formatter=new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        //设置学生报名活动的时间
         studentActivity.setApplyTime(formatter.format(date));
         activity.getStudentActivities().add(studentActivity);
         studentService.addStudent(student);

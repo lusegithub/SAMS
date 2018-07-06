@@ -137,13 +137,17 @@ public class AssociationController {
     @ResponseBody
     public Result addActivity(Activity activity) {
         SysUser user= (SysUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        //获取当前正在进行操作的社团管理员
         AssociationDetail detail=user.getAssociationDetail();
         Result result=new Result();
+        //设置活动的主办方
         activity.setDetail(detail);
         activity.setStatus(4);
         Date date=new Date();
         SimpleDateFormat formatter=new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        //设置活动的申请时间
         activity.setApplyTime(formatter.format(date));
+        //将数据保存到数据库中
         activityService.addActivity(activity);
         result.setResultCode(1);
         result.setResultInfo("添加成功,等待审核");
@@ -243,11 +247,12 @@ public class AssociationController {
     @ResponseBody
     public void pass(String ids,Integer code){
         SysUser user= (SysUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        //获取当前登录的社团
         AssociationDetail detail=user.getAssociationDetail();
         if (code == 1) {
-            studentService.updateStatus(ids, detail.getId());
+            studentService.updateStatus(ids, detail.getId());//审核通过
         }else {
-            studentService.refuse(ids,detail.getId());
+            studentService.refuse(ids,detail.getId());//审核不通过
         }
     }
 

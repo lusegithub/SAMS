@@ -30,18 +30,23 @@ public class ActivityService {
 
     public Page<Activity> findAllActivityByPage(HashMap<String ,Object> hashMap, int pageIndex, int pageSize){
         Specification querySpecifi = (Specification<Activity>) (root, criteriaQuery, criteriaBuilder) -> {
+            //构造查询语句
             List<Predicate> predicates = new ArrayList<>();
+            //判断是否根据活动名称查询
             if(null != hashMap.get("name") && !hashMap.get("name").equals("")){
                 predicates.add(criteriaBuilder.like(root.get("name"), "%"+(String) hashMap.get("name")+"%"));
             }
+            //判断是否根据活动状态查询
             if(!StringUtils.isEmpty(hashMap.get("status"))){
                 predicates.add(criteriaBuilder.equal(root.get("status").as(Integer.class), hashMap.get("status")));
             }
+            //判断是否根据所属社团查询
             if (!StringUtils.isEmpty(hashMap.get("association_id"))){
                 predicates.add(criteriaBuilder.equal(root.join("detail").get("id"),hashMap.get("association_id")));
             }
             return criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()]));
         };
+        //返回搜索结果
         return activityRepository.findAll(querySpecifi,new PageRequest(pageIndex-1,pageSize));
     }
 
@@ -52,10 +57,13 @@ public class ActivityService {
     public void sendActivity(Activity activity) throws ParseException {
         String overTime=activity.getOverTime();
         SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        //获取活动的报名截止时间
         Date over=format.parse(overTime);
+        //开启定时任务
         scheduledUtil.addJob(over,new Runnable() {
             @Override
             public void run() {
+                //定时修改活动的状态
                 changeStatus(activity.getId(),3,2);
             }
         });

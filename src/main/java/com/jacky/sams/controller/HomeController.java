@@ -34,7 +34,9 @@ public class HomeController {
 
     @RequestMapping(value="/dispatch")
     public String dispatch(){
+        //获取当前登录用户的角色信息
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        //根据角色信息跳转页面
         if(auth.getAuthorities().toString().equals("[ROLE_ADMIN]")) {
             return "redirect:admin/association/listPage";
         } else if (auth.getAuthorities().toString().equals("[ROLE_ASSOCIATION]")){
@@ -73,11 +75,13 @@ public class HomeController {
     public Result addAssociation(AssociationDetail associationDetail, @RequestParam(value = "logoPic", required = false) MultipartFile multipartFile) {
         Result result=new Result();
         result.setResultCode(0);
+        //查看当前系统是否存在相同名称的社团
         AssociationDetail detail=associationService.findByName(associationDetail.getName());
         if (!StringUtils.isEmpty(detail)){
             result.setResultInfo("当前系统已经存在相同名称的社团，请重新输入！");
             return result;
         }
+        //上传图片
         if (multipartFile!=null && !multipartFile.isEmpty()) {
             if (!multipartFile.getContentType().contains("image")){
                 result.setResultInfo("只能上传图片");
@@ -85,6 +89,7 @@ public class HomeController {
             }
             String file_name;
             try {
+                //图片保存地址
                 file_name = ImageUtil.saveImg(null,multipartFile, location);
             } catch (IOException e) {
                 result.setResultInfo("图片上传失败");
@@ -94,6 +99,7 @@ public class HomeController {
         }
         Date date=new Date();
         SimpleDateFormat formatter=new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        //设置申请时间
         associationDetail.setApplyTime(formatter.format(date));
         associationDetail.setPass(2);
         associationService.addAssociation(associationDetail);

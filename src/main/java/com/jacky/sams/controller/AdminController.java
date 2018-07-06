@@ -79,17 +79,21 @@ public class AdminController {
     public Result add(SysUser sysUser,String asso_id){
         Result result=new Result();
         SysUser user=userService.getUser(sysUser.getUsername());
+        //判断当前系统是否存在相同账号
         if (user!=null){
             result.setResultCode(0);
             result.setResultInfo("账号已存在");
             return result;
         }
+        //获取社团管理员账号的角色权限
         SysRole role=roleService.getRole("3");
         sysUser.setRole(role);
         AssociationDetail detail=associationService.getAssociation(asso_id);
+        //设置账号管理的社团
         sysUser.setAssociationDetail(detail);
         Date date=new Date();
         SimpleDateFormat formatter=new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        //设置账号创建时间
         sysUser.setSignUpTime(formatter.format(date));
         userService.addUser(sysUser);
         result.setResultCode(1);
@@ -107,12 +111,12 @@ public class AdminController {
     public HashMap<String, Object> getAssociations(Integer pass,String name,String category,int pageIndex,int pageSize){
         HashMap<String ,Object> hashMap=new HashMap<>();
         HashMap<String ,Object> paramMap=new HashMap<>();
-        paramMap.put("category",category);
-        paramMap.put("name",name);
-        paramMap.put("pass",pass);
+        paramMap.put("category",category);//社团类别
+        paramMap.put("name",name);//社团全称
+        paramMap.put("pass",pass);//状态
         Page<AssociationDetail> detailPage=associationService.findAllAssociationByPage(paramMap,pageIndex,pageSize);
         hashMap.put("data",detailPage.getContent());
-        hashMap.put("total",detailPage.getTotalElements());
+        hashMap.put("total",detailPage.getTotalElements());//社团总数
         return hashMap;
     }
 

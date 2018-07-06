@@ -103,6 +103,7 @@ public class StudentService {
     }
 
     public Page<StudentActivityVo> findStudentsByActivity(HashMap<String ,Object> hashMap, int pageIndex, int pageSize){
+        //构造查询语句
         String fromSql="FROM student s JOIN student_activity sa ON s.id=sa.student_id ";
         String whereSql="WHERE sa.activity_id=:activity_id";
         if (!StringUtils.isEmpty(hashMap.get("name"))){
@@ -113,11 +114,13 @@ public class StudentService {
         }
         String sql="SELECT s.*,sa.apply_time "+fromSql+whereSql;
         String countsql="SELECT count(*) "+fromSql+whereSql;
+        //执行查询
         List vos= commonDao.queryListEntity(sql,hashMap,StudentActivityVo.class);
         if (vos==null){
             vos=new ArrayList();
         }
         int total=commonDao.getCountBy(countsql,hashMap);
+        //返回查询结果
         return new PageImpl<StudentActivityVo>(vos,new PageRequest(pageIndex-1,pageSize),total);
     }
 }
